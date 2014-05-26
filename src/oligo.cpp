@@ -8,6 +8,10 @@ Oligo::Oligo(std::string seq) {
   set_sequence(seq);
 }
 
+Oligo::Oligo(const Oligo& another) {
+  set_sequence(another.sequence);
+}
+
 void Oligo::set_sequence(std::string seq) {
   sequence = seq;
   length = seq.size();
@@ -35,6 +39,10 @@ bool Oligo::operator==(const Oligo & another) {
 
 bool Oligo::operator!=(const Oligo & another) {
   return !operator==(another);
+}
+
+bool Oligo::operator<(const Oligo & another) const {
+  return sequence < another.sequence;
 }
 
 std::vector<std::string> Oligo::possibilities() {

@@ -20,7 +20,7 @@ namespace PUT {
 
         Oligo();
         Oligo(std::string);
-        Oligo(Oligo &);
+        Oligo(const Oligo &);
 
         /**
          * Sets sequence string, its length and type
@@ -41,6 +41,11 @@ namespace PUT {
          * Inverted comparation of oligos
          * */
         bool operator!=(const Oligo &);
+
+        /**
+         * Comparator
+         */
+        bool operator<(const Oligo &) const;
 
         /**
          * Generates list of possible nucleotydes basing on alternating

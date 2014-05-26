@@ -9,26 +9,23 @@ Reader::Reader(const std::string& filename_) : filename(filename_) {
   std::ifstream input(filename_);
 
   int occurence = -1;
-  std::vector<std::string> &current_section = sections[0];
+  int current_section = 0;
 
   for (std::string line; std::getline(input, line);) {
     switch (parseLine(line)) {
       case State::ODD:
-        std::cerr << "ODD\n";
-        current_section = sections[0];
+        current_section = 0;
         odd_length = std::stoi(line);
         break;
       case State::EVEN:
-        std::cerr << "EVEN\n";
+        current_section = 1;
         even_length = std::stoi(line);
         break;
       case State::OCCURENCE:
         occurence = line[0] == 'N' ? -1 : std::stoi(line);
-        std::cerr << "OCC " << occurence << "\n";
         break;
       case State::OLIGO:
-        std::cerr << "OLIGO " << line << "\n";
-        current_section.push_back(line);
+        sections[current_section].add(line, occurence);
         break;
       case State::NONE:
         break;
