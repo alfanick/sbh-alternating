@@ -11,6 +11,7 @@ namespace PUT {
       X = 'x'
     };
 
+    typedef std::string Sequence;
   }
 }
 
