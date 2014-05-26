@@ -6,6 +6,8 @@
 #include "sequence.h"
 #include "node.h"
 #include <vector>
+#include <iostream>
+#include <utility>
 
 namespace PUT {
   namespace SBH {
@@ -22,13 +24,13 @@ namespace PUT {
         /**
          * Constructor with data to feed algorithm
          */
-        Sequencer(Chip &, int, int);
+        Sequencer(Chip &, int, int, std::pair<Sequence, Sequence>);
         
 
         /**
          * Feeds sequencer algorithm with data
          */
-        void feed(Chip &, int, int);
+        void feed(Chip &, int, int, std::pair<Sequence, Sequence>);
 
         /**
          * Runs algorithm
@@ -41,12 +43,15 @@ namespace PUT {
         std::vector<Sequence> get_results();
 
       private:
-        int n,                          // Result sequence length
-            k;                          // Determines oligonucleotyde length
-        std::vector<Sequence> results;  // Possible results list
-        Chip chip;                      // Array of 2 spectrum objects 
-        Oligo start[2];                 // Two first starting oligos (even and odd)
-        Graph graph;                    // Map of nodes
+        int n,                                // Result sequence length
+            k;                                // Determines oligonucleotyde length
+        std::vector<Sequence> results;        // Possible results list
+        Chip chip;                            // Array of 2 spectrum objects 
+        std::pair<Sequence, Sequence> start;  // Two first starting oligos (even and odd)
+        Graph graph;                          // Map of nodes
+        std::vector<Oligo> even_path,         // Even path
+                           odd_path;          // Odd path
+        
 
         /**
          * Builds graph on top of given spectrum
@@ -58,6 +63,11 @@ namespace PUT {
          *   in spectrum
          */
         void build_graph();
+
+        /**
+         * Prints graph to output
+         */
+        void print_graph();
     };
   }
 }
