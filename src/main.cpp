@@ -13,7 +13,7 @@ int main() {
   std::cout << "Hello World!\n";
 
   oligo o1("axcxt");
-  assert(o1.type = Oligo::SPECIAL);
+  assert(o1.type == Oligo::SPECIAL);
   
   std::vector<std::string> list = o1.possibilities();
   std::cout << "Possible oligos for " << o1.sequence << ":\n";
