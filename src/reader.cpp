@@ -16,10 +16,11 @@ Reader::Reader(const std::string& filename_) : filename(filename_) {
       case State::ODD:
         std::cerr << "ODD\n";
         current_section = sections[0];
+        odd_length = std::stoi(line);
         break;
       case State::EVEN:
         std::cerr << "EVEN\n";
-        current_section = sections[1];
+        even_length = std::stoi(line);
         break;
       case State::OCCURENCE:
         occurence = line[0] == 'N' ? -1 : std::stoi(line);
@@ -39,15 +40,16 @@ Reader::Reader(const std::string& filename_) : filename(filename_) {
 }
 
 Reader::State Reader::parseLine(std::string& line) {
-  if (line.find(";ALTERNATING-O") == 0)
+  if (line.find(";ALTERNATING-O") == 0) {
+    line.erase(0, 15);
     return Reader::State::ODD;
-  else if (line.find(";ALTERNATING-E") == 0)
+  } else if (line.find(";ALTERNATING-E") == 0) {
+    line.erase(0, 15);
     return Reader::State::EVEN;
-  else if (line[0] == '>') {
+  } else if (line[0] == '>') {
     line.erase(0, 1);
     return Reader::State::OCCURENCE;
-  }
-  else if (line[0] == 'A' || line[0] == 'T' || line[0] == 'G' || line[0] == 'C') {
+  } else if (line[0] == 'A' || line[0] == 'T' || line[0] == 'G' || line[0] == 'C') {
     return Reader::State::OLIGO;
   }
   return Reader::State::NONE;

@@ -20,6 +20,7 @@ namespace PUT {
         State parseLine(std::string& line);
 
         std::string filename;
+        int odd_length, even_length;
 
     };
   };
