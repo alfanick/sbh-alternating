@@ -48,7 +48,7 @@ def print_alternating(name, seq, args, chip):
         print ">%s" % str(n)
         for oligo in oligos:
             print oligo
-    print ";ALTERNATING-K|%d" % args.sample_length
+    print ";ALTERNATING-E|%d" % args.sample_length
     for n, oligos in chip[1].iteritems():
         print ">%s" % str(n)
         for oligo in oligos:
