@@ -1,5 +1,5 @@
 SOURCES=main.cpp reader.cpp oligo.cpp spectrum.cpp sequence.cpp
-CXX=clang++ -Wall -std=c++11 -g -stdlib=libc++ -O3
+CXX=clang++ -Wall -std=c++11 -g -stdlib=libc++ -O3 -fshort-enums
 OBJECTS=$(patsubst %.cpp,obj/%.o,$(SOURCES))
 
 .PHONY: all clean
