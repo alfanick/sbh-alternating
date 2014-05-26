@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <climits>
 
 namespace PUT {
   namespace SBH {
@@ -59,9 +60,9 @@ namespace PUT {
         /**
          * Counts maximum overlap of oligos basing on alternating chip
          * rules. 0 is entire oligo overlap, 1 is overlap moved by 2, etc.
-         * -1 is returned when no overlap is possible
+         * INT_MAX is returned when no overlap is possible
          * */
-        short max_overlap(Oligo &);
+        int max_overlap(Oligo &);
     };
 
     typedef Oligo oligo;
