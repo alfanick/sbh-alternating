@@ -49,8 +49,8 @@ namespace PUT {
         Chip chip;                            // Array of 2 spectrum objects 
         std::pair<Sequence, Sequence> start;  // Two first starting oligos (even and odd)
         Graph graph;                          // Map of nodes
-        std::vector<Oligo> even_path,         // Even path
-                           odd_path;          // Odd path
+        Sequence even_path, odd_path;         // Even and odd path
+        char current_path;                    // Current path indicator
         
 
         /**

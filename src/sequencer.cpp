@@ -17,13 +17,25 @@ void Sequencer::feed(Chip & chip, int n, int k, std::pair<Sequence, Sequence> st
 }
 
 void Sequencer::run() {
-  odd_path.clear();
-  even_path.clear();
   results.clear();
   build_graph();
   print_graph();
 
+  current_path = 0;
 
+  even_path = start.first;
+  odd_path = start.first;
+
+  while(1) {
+    Sequence *current;
+    // Even path
+    if(current_path % 2 == 0)
+      current = &even_path;
+    else
+      current = &odd_path;
+
+    current_path++;
+  }
 }
 
 void Sequencer::build_graph() {
