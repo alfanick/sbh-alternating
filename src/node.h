@@ -3,6 +3,7 @@
 
 #include <set>
 #include <utility>
+#include <map>
 #include "oligo.h"
 
 namespace PUT {
@@ -16,12 +17,15 @@ namespace PUT {
         };
       public:
         oligo value;
+        int occurence;
         std::set<std::pair<Node *, int>, edgescomp> adjacent;
 
-        Node(Oligo &);
+        Node(Oligo, int);
 
         void connect(Node *, int);
     };
+
+    typedef std::map<std::string, Node *> Graph;
   }
 }
 

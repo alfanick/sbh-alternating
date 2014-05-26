@@ -5,7 +5,7 @@ using namespace PUT::SBH;
 
 Oligo::Oligo() : length(0), sequence("") {}
 
-Oligo::Oligo(std::string seq) {
+Oligo::Oligo(Sequence seq) {
   set_sequence(seq);
 }
 
@@ -13,7 +13,7 @@ Oligo::Oligo(const Oligo& another) {
   set_sequence(another.sequence);
 }
 
-void Oligo::set_sequence(std::string seq) {
+void Oligo::set_sequence(Sequence seq) {
   std::transform(seq.begin(), seq.end(), seq.begin(), ::tolower);
   sequence = seq;
   length = seq.size();
@@ -23,7 +23,7 @@ void Oligo::set_sequence(std::string seq) {
     type = SPECIAL;
 }
 
-Oligo& Oligo::operator=(std::string sequence) {
+Oligo& Oligo::operator=(Sequence sequence) {
   set_sequence(sequence);
   return *this;
 }
@@ -47,18 +47,18 @@ bool Oligo::operator<(const Oligo & another) const {
   return sequence < another.sequence;
 }
 
-std::vector<std::string> Oligo::possibilities() {
-  std::vector<std::string> res;
-  std::queue<std::string> queue;
+std::vector<Sequence> Oligo::possibilities() {
+  std::vector<Sequence> res;
+  std::queue<Sequence> queue;
   queue.push(sequence);
   while (!queue.empty()) {
-    std::string current = queue.front();
+    Sequence current = queue.front();
     queue.pop();
     int pos = current.find_first_of(Nucleotide::X);
     if(pos != std::string::npos) {
       std::string letters = "acgt";
       for(int i = 0; i < letters.size(); ++i) {
-        std::string copy(current);
+        Sequence copy(current);
         copy[pos] = letters[i];
         queue.push(copy);
       }
