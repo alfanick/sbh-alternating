@@ -1,4 +1,5 @@
 #include "oligo.h"
+#include "sequence.h"
 
 using namespace PUT::SBH;
 
@@ -16,7 +17,7 @@ Oligo::Oligo(const Oligo& another) {
 void Oligo::set_sequence(std::string seq) {
   sequence = seq;
   length = seq.size();
-  if (seq.find_first_of('x') == std::string::npos)
+  if (seq.find_first_of(Nucleotide::X) == std::string::npos)
     type = CLASSIC;
   else
     type = SPECIAL;
@@ -32,7 +33,7 @@ bool Oligo::operator==(const Oligo & another) {
     return false;
 
   for(int i = 0; i < sequence.size(); ++i)
-    if(another.sequence[i] != 'x' && sequence[i] != 'x' && sequence[i] != another.sequence[i])
+    if(another.sequence[i] != Nucleotide::X && sequence[i] != Nucleotide::X && sequence[i] != another.sequence[i])
       return false;
 
   return true;
@@ -53,7 +54,7 @@ std::vector<std::string> Oligo::possibilities() {
   while (!queue.empty()) {
     std::string current = queue.front();
     queue.pop();
-    int pos = current.find_first_of('x');
+    int pos = current.find_first_of(Nucleotide::X);
     if(pos != std::string::npos) {
       std::string letters = "acgt";
       for(int i = 0; i < letters.size(); ++i) {

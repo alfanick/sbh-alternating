@@ -1,4 +1,4 @@
-SOURCES=main.cpp reader.cpp oligo.cpp spectrum.cpp
+SOURCES=main.cpp reader.cpp oligo.cpp spectrum.cpp sequence.cpp
 CXX=clang++ -Wall -std=c++11 -g -stdlib=libc++ -O3
 OBJECTS=$(patsubst %.cpp,obj/%.o,$(SOURCES))
 
