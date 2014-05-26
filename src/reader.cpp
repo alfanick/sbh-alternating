@@ -23,11 +23,11 @@ Reader::Reader(const std::string& filename_) : filename(filename_) {
         break;
       case State::ODD:
         current_section = 0;
-        odd_length = std::stoi(line);
+        sample_length = std::stoi(line);
         break;
       case State::EVEN:
         current_section = 1;
-        even_length = std::stoi(line);
+        sample_length = std::stoi(line);
         break;
       case State::OCCURENCE:
         occurence = line[0] == 'N' ? INT_MAX : std::stoi(line);

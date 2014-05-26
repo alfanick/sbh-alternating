@@ -17,6 +17,7 @@ namespace PUT {
         Chip sections;
         Oligo beginning;
         unsigned long long length;
+        int sample_length;
 
       private:
         enum State { NONE, ODD, EVEN, OCCURENCE, OLIGO, INFO };
@@ -24,7 +25,6 @@ namespace PUT {
         State parseLine(std::string& line);
 
         std::string filename;
-        int odd_length, even_length;
 
     };
   };
