@@ -21,6 +21,9 @@
 *.app
 bin/sbh
 
+*.flat
+*.gdx
+*.pyc
 # Swap files
 *.swo
 *.swp
