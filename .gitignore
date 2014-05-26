@@ -20,3 +20,8 @@
 *.out
 *.app
 bin/sbh
+
+# Swap files
+*.swo
+*.swp
+*~
