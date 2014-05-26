@@ -6,7 +6,6 @@ using namespace PUT::SBH;
 Oligo::Oligo() : length(0), sequence("") {}
 
 Oligo::Oligo(std::string seq) {
-  std::transform(seq.begin(), seq.end(), seq.begin(), ::tolower);
   set_sequence(seq);
 }
 
@@ -15,6 +14,7 @@ Oligo::Oligo(const Oligo& another) {
 }
 
 void Oligo::set_sequence(std::string seq) {
+  std::transform(seq.begin(), seq.end(), seq.begin(), ::tolower);
   sequence = seq;
   length = seq.size();
   if (seq.find_first_of(Nucleotide::X) == std::string::npos)
