@@ -1,0 +1,17 @@
+Files are based on FASTA format.
+
+Lines starting with ; (semicolon) mark beginning of section.
+For Alternating chip two sections are allowed:
+  ;ALTERNATING-O|k
+  ;ALTERNATING-E|k
+Where k is count of known nucleotides (that is ATGC).
+
+After section definition multiple oligonucleotides are defined using 
+ATGCX alphabet, where X is unknown nucleotide. In example:
+  AXGXGXGXAXAA
+
+Before oligo is defined number of its occurences may be specified as follows
+  >i
+Where i is number of occurences (usually 0,1,2) or N for greater number.
+Number of occurences is in force as long as other number is given or 
+new section is marked.
