@@ -12,7 +12,8 @@ namespace PUT {
       private:
         struct edgescomp {
           bool operator()(const std::pair<Node *, int> &a, const std::pair<Node *, int> b) const {
-            return a < b;
+            if(a.second != b.second) return a.second < b.second;
+            return a.first < b.first;
           }
         };
       public:

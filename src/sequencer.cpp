@@ -4,15 +4,19 @@ using namespace PUT::SBH;
 
 Sequencer::Sequencer() {};
 
-Sequencer::Sequencer(Chip & chip, int n, int k, std::pair<Sequence, Sequence> start) {
+Sequencer::Sequencer(Chip & chip, int n, int k, Sequence start) {
   feed(chip, n, k, start);
 }
 
-void Sequencer::feed(Chip & chip, int n, int k, std::pair<Sequence, Sequence> start) {
+void Sequencer::feed(Chip & chip, int n, int k, Sequence start) {
   this->chip = chip;
   this->n = n;
   this->k = k;
-  this->start = start;
+  Sequence first = start.substr(0, start.length()-1);
+  Sequence second = start.substr(1);
+  for(int i = 1; i < first.length(); i+=2) first[i] = Nucleotide::X;
+  for(int i = 1; i < second.length(); i+=2) second[i] = Nucleotide::X;
+  this->start = make_pair(first,second);
   results.clear();
 }
 
@@ -24,7 +28,9 @@ void Sequencer::run() {
   current_path = 0;
 
   even_path = start.first;
-  odd_path = start.first;
+  odd_path = start.second;
+
+  std::cout << "start: " << start.first << "," << start.second << "\n";
 
   while(1) {
     Sequence *current;

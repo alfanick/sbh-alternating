@@ -2,44 +2,29 @@
 
 #include "reader.h"
 #include "oligo.h"
+#include "sequencer.h"
 #include <vector>
 #include <assert.h>
 
 using namespace PUT::SBH;
 
-int main() {
-  PUT::SBH::Reader* r = new PUT::SBH::Reader("data/example.seq");
+int main(int argc, char **argv) {
+  std::string filepath = "data/example.seq";
+
+  if(argc > 1) 
+    filepath = argv[1];
+
+  PUT::SBH::Reader* r = new PUT::SBH::Reader(filepath);
 
   std::cerr << "Odd: \n";
   for (auto& l : r->sections[0]) {
     std::cerr << l.first.sequence << " * " << l.second << std::endl;
   }
 
-  std::cerr << "Even: \n";
-  for (auto& l : r->sections[1]) {
-    std::cerr << l.first.sequence << " * " << l.second << std::endl;
-  }
+  std::cout << "Beginning from reader: " << r->beginning.sequence << "\n";
 
-
-  oligo o1("axcxt");
-  assert(o1.type == Oligo::SPECIAL);
-
-  std::vector<std::string> list = o1.possibilities();
-  std::cout << "Possible oligos for " << o1.sequence << ":\n";
-  for(auto iter = list.begin(); iter != list.end(); ++iter)
-    std::cout << "\t" << *iter << "\n";
-
-  oligo o2("xtcgt");
-  assert(o1 == o2);
-
-  o2 = "cgtca";
-  assert(o1 != o2);
-  assert(o2.type == Oligo::CLASSIC);
-
-  o1 = "axcxtxg";
-  o2 = "txgxgxa";
-  assert(o1.max_overlap(o2) == 2);
-  assert(o1.max_overlap(o1) == 0);
+  Sequencer sequencer(r->sections, r->length, r->sample_length, r->beginning.sequence);
+  sequencer.run();
 
   return 0;
 }

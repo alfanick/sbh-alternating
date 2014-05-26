@@ -24,13 +24,13 @@ namespace PUT {
         /**
          * Constructor with data to feed algorithm
          */
-        Sequencer(Chip &, int, int, std::pair<Sequence, Sequence>);
+        Sequencer(Chip &, int, int, Sequence);
         
 
         /**
          * Feeds sequencer algorithm with data
          */
-        void feed(Chip &, int, int, std::pair<Sequence, Sequence>);
+        void feed(Chip &, int, int, Sequence);
 
         /**
          * Runs algorithm

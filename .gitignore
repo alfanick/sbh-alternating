@@ -21,6 +21,8 @@
 *.app
 bin/sbh
 
+*.seq
+
 *.flat
 *.gdx
 *.pyc
@@ -28,3 +30,4 @@ bin/sbh
 *.swo
 *.swp
 *~
+
