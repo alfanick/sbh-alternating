@@ -2,6 +2,7 @@
 #define PUT_SBH_ALT_READER_H_
 
 #include "spectrum.h"
+#include "oligo.h"
 
 #include <string>
 #include <array>
@@ -14,9 +15,11 @@ namespace PUT {
         Reader(const std::string& filename_);
 
         Chip sections;
+        Oligo beginning;
+        unsigned long long length;
 
       private:
-        enum State { NONE, ODD, EVEN, OCCURENCE, OLIGO };
+        enum State { NONE, ODD, EVEN, OCCURENCE, OLIGO, INFO };
 
         State parseLine(std::string& line);
 

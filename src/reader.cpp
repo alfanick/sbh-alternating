@@ -10,11 +10,17 @@ namespace SBH {
 Reader::Reader(const std::string& filename_) : filename(filename_) {
   std::ifstream input(filename_);
 
-  int occurence = -1;
+  int occurence = INT_MAX;
   int current_section = 0;
+  int lpos = -1;
 
   for (std::string line; std::getline(input, line);) {
     switch (parseLine(line)) {
+      case State::INFO:
+        lpos = line.find("|");
+        beginning = line.substr(0, lpos);
+        length = std::stoull(line.substr(lpos+1, line.length() - lpos));
+        break;
       case State::ODD:
         current_section = 0;
         odd_length = std::stoi(line);
@@ -39,17 +45,20 @@ Reader::Reader(const std::string& filename_) : filename(filename_) {
 }
 
 Reader::State Reader::parseLine(std::string& line) {
-  if (line.find(";ALTERNATING-O") == 0) {
+  if (line[0] == 'A' || line[0] == 'T' || line[0] == 'G' || line[0] == 'C') {
+    return Reader::State::OLIGO;
+  } else if (line[0] == '>') {
+    line.erase(0, 1);
+    return Reader::State::OCCURENCE;
+  } else if (line.find(";INFO") == 0) {
+    line.erase(0, 6);
+    return Reader::State::INFO;
+  } if (line.find(";ALTERNATING-O") == 0) {
     line.erase(0, 15);
     return Reader::State::ODD;
   } else if (line.find(";ALTERNATING-E") == 0) {
     line.erase(0, 15);
     return Reader::State::EVEN;
-  } else if (line[0] == '>') {
-    line.erase(0, 1);
-    return Reader::State::OCCURENCE;
-  } else if (line[0] == 'A' || line[0] == 'T' || line[0] == 'G' || line[0] == 'C') {
-    return Reader::State::OLIGO;
   }
   return Reader::State::NONE;
 }

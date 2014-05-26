@@ -6,9 +6,16 @@ For Alternating chip two sections are allowed:
   ;ALTERNATING-E|k
 Where k is count of known nucleotides (that is ATGC).
 
+Optionally ;INFO sections is allowed which adds beginning of DNA
+sequence to reconstruct and its length.
+  ;INFO|seq|n
+Where seq is DNA sequence and n is length of whole sequence.
+
 After section definition multiple oligonucleotides are defined using 
-ATGCX alphabet, where X is unknown nucleotide. In example:
+ATGCX alphabet, where X is unknown nucleotide. Every oligo is defined
+in new line In example:
   AXGXGXGXAXAA
+  AXAXGXAXAXAA
 
 Before oligo is defined number of its occurences may be specified as follows
   >i
