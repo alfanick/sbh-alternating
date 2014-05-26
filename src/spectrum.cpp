@@ -1,5 +1,5 @@
 #include "spectrum.h"
-#include <iostream>
+
 namespace PUT {
 namespace SBH {
 

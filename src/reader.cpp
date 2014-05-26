@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include <iostream>
+#include <climits>
+
 namespace PUT {
 namespace SBH {
 
@@ -22,7 +24,7 @@ Reader::Reader(const std::string& filename_) : filename(filename_) {
         even_length = std::stoi(line);
         break;
       case State::OCCURENCE:
-        occurence = line[0] == 'N' ? -1 : std::stoi(line);
+        occurence = line[0] == 'N' ? INT_MAX : std::stoi(line);
         break;
       case State::OLIGO:
         sections[current_section].add(line, occurence);
