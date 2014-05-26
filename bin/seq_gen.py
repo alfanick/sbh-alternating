@@ -24,22 +24,25 @@ def map_invert(map):
         inv_map[v].append(k)
     return inv_map
 
+def remove_known(oligo):
+    return "".join([('X' if i%2 else k) for i,k in enumerate(oligo)])
+
+
 def chop_sequence_alternating(seq, k):
     a, b = defaultdict(int), defaultdict(int)
 
     for i, n in enumerate(seq+" "):
-        if i < k:
-            continue
-        oligo = seq[i-k:i]
-
-        a["X".join(oligo)] += 1
-        b["X".join(oligo[0:-1]) + oligo[-1]] += 1
+        if i >= 2*k-1:
+            a[remove_known(seq[i-(2*k-1):i])] += 1
+        if i >= 2*k-2:
+            oligo = seq[i-(2*k-2):i]
+            b[remove_known(oligo[0:-1]) + oligo[-1]] += 1
 
     return (map_invert(trim_values(a)), map_invert(trim_values(b)))
 
-def print_alternating(name, start, args, chip):
+def print_alternating(name, seq, args, chip):
     print "; from %s" % name
-    print ";INFO|%s|%s" % (start, args.length)
+    print ";INFO|%s|%s" % (seq[0:args.start], args.length)
     print ";ALTERNATING-O|%d" % args.sample_length
     for n, oligos in chip[0].iteritems():
         print ">%s" % str(n)
@@ -50,6 +53,9 @@ def print_alternating(name, start, args, chip):
         print ">%s" % str(n)
         for oligo in oligos:
             print oligo
+
+    print "; orignal sequence"
+    print "; %s" % seq
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -69,6 +75,6 @@ if __name__ == "__main__":
 
     if args.chip == "alternating-ex":
         chip = chop_sequence_alternating(seq, args.sample_length)
-        print_alternating(seq_name, seq[0:args.start], args, chip)
+        print_alternating(seq_name, seq, args, chip)
     else:
         print "unsupported chip type"
