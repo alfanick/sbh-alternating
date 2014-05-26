@@ -4,6 +4,7 @@
 #include "spectrum.h"
 #include "oligo.h"
 #include "sequence.h"
+#include "node.h"
 #include <vector>
 
 namespace PUT {
@@ -40,11 +41,23 @@ namespace PUT {
         std::vector<Sequence> get_results();
 
       private:
-        int n,                        // Result sequence length
-            k;                        // Determines oligonucleotyde length
-        std::vector<Sequence> results;     // Possible results list
-        Chip chip;                    // Array of 2 spectrum objects 
+        int n,                          // Result sequence length
+            k;                          // Determines oligonucleotyde length
+        std::vector<Sequence> results;  // Possible results list
+        Chip chip;                      // Array of 2 spectrum objects 
+        Oligo start[2];                 // Two first starting oligos (even and odd)
+        Graph graph;                    // Map of nodes
 
+        /**
+         * Builds graph on top of given spectrum
+         * - Each oligo represents one node
+         * - Edges between nodes represents overlapping - the bigger
+         *   weight is, the smaller is max possible overlap between
+         *   two oligos
+         * - Each node contains information about number of oligos
+         *   in spectrum
+         */
+        void build_graph();
     };
   }
 }
