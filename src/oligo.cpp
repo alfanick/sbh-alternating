@@ -58,3 +58,13 @@ std::vector<std::string> Oligo::possibilities() {
   }
   return res;
 }
+
+short Oligo::max_overlap(Oligo & another) {
+  if(another.length != length)
+    throw std::invalid_argument("Overlapping oligos should be the same length");
+  for(int offset = 0; offset < length-1; offset+=2) {
+    if(sequence.compare(offset, std::string::npos, another.sequence, 0, another.length - offset) == 0)
+      return offset/2;
+  }
+  return -1;
+}
