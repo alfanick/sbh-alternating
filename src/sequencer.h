@@ -44,13 +44,16 @@ namespace PUT {
 
       private:
         int n,                                // Result sequence length
-            k;                                // Determines oligonucleotyde length
-        std::vector<Sequence> results;        // Possible results list
+            k,                                // Determines oligonucleotide length
+            oligo_length;                     // Oligonucletide length
+        std::vector<Sequence> results,        // Possible results list
+                          verify_list;        // Verification list based on second part of chip
         Chip chip;                            // Array of 2 spectrum objects 
         std::pair<Sequence, Sequence> start;  // Two first starting oligos (even and odd)
         Graph graph;                          // Map of nodes
-        Sequence even_path, odd_path;         // Even and odd path
-        char current_path;                    // Current path indicator
+        Sequence even_path, odd_path,         // Even and odd path
+                 *current_path,               // Currently updated path
+                 *last_path;                  // Last updated path
         
 
         /**
@@ -68,6 +71,19 @@ namespace PUT {
          * Prints graph to output
          */
         void print_graph();
+
+        /**
+         * Generates candidate vertices list for last nucleotide in
+         * current path
+         */
+        std::vector<Sequence> candidates();
+
+
+        /**
+         * Verify given oligo using currently built path and second
+         * part of Chip Spectrum
+         */
+        bool verify(Sequence &);
     };
   }
 }
