@@ -7,6 +7,9 @@
 
 namespace PUT {
   namespace SBH {
+    /**
+     * Oligonucleotyde built with alternating chip rules
+     * */
     class Oligo {
       public:
         enum type {
@@ -52,6 +55,13 @@ namespace PUT {
          * chip rules
          * */
         std::vector<std::string> possibilities();
+
+        /**
+         * Counts maximum overlap of oligos basing on alternating chip
+         * rules. 0 is entire oligo overlap, 1 is overlap moved by 2, etc.
+         * -1 is returned when no overlap is possible
+         * */
+        short max_overlap(Oligo &);
     };
 
     typedef Oligo oligo;

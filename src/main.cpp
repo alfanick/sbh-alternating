@@ -36,5 +36,10 @@ int main() {
   assert(o1 != o2);
   assert(o2.type == Oligo::CLASSIC);
 
+  o1 = "axcxtxg";
+  o2 = "txgxgxa";
+  assert(o1.max_overlap(o2) == 2);
+  assert(o1.max_overlap(o1) == 0);
+
   return 0;
 }
