@@ -60,6 +60,7 @@ def print_alternating(name, seq, args, chip):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", default="data/ecoli.fa", help="input sequence in FASTA format")
+    parser.add_argument("-r", "--random", action="store_true", default=False, help="use random sequence instead of FASTA")
     parser.add_argument("-c", "--chip", default="alternating-ex", help="chip type for SBH simulation")
     parser.add_argument("-s", "--start", type=int, default=2, help="number of known nucleotides")
     parser.add_argument("-k", "--sample-length", type=int, default=5, help="sample length")
@@ -68,8 +69,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     seq = ""
-    while len(seq) < args.length:
-        seq_name, seq = random_sequence(args.input)
+
+    if args.random:
+        seq_name = "random"
+        seq = ''.join(choice(['A','T','G','C']) for _ in range(args.length))
+    else:
+        while len(seq) < args.length:
+            seq_name, seq = random_sequence(args.input)
 
     seq = select_sequence(seq, args.length)
 
