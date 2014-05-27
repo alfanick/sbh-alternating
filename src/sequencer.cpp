@@ -25,11 +25,9 @@ void Sequencer::run() {
   results.clear();
 
   verify_list.clear();
-  std::cout << "Building verify list\n";
-  for(auto val : chip[1]) {
-    std::cout << "Veirfy: " << &(val.first.sequence) << std::endl;
+
+  for(auto& val : chip[1])
     verify_list.push_back(&(val.first.sequence));
-  }
 
   build_graph();
   print_graph();
@@ -49,9 +47,7 @@ void Sequencer::run() {
     std::vector<Edge> cands_list = candidates();
 
     Sequence last_o = last_oligo(*current_path);
-    std::cout << "Last oligo: " << last_o << "\n";
     if(cands_list.size() > 0) {
-      std::cout << "dupa" << std::endl;
       Edge chosen = cands_list[0];
       Sequence chosen_seq = chosen.first->value->sequence;
       *current_path += chosen_seq.substr(chosen_seq.length() - 2*(chosen.second));
@@ -108,7 +104,6 @@ std::vector<Edge> Sequencer::candidates() {
         Sequence possible = last_path->substr(last_path->length() - oligo_length + 2);
         Sequence next_seq = next_node->value->sequence;
         possible += next_seq[next_seq.size() - 1 - 2*(weight-1)];
-        std::cout << "veryfing " << possible << " with result " << verify(possible) << std::endl;
         if(next_node->occurence > 0 && verify(possible))
           cands.push_back(adj);
       }
