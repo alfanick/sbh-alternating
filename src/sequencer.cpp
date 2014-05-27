@@ -131,14 +131,14 @@ void Sequencer::build_graph() {
 }
 
 void Sequencer::print_graph() {
-  std::cout << "*********** Adjacency graph ************\n";
+  std::cerr << "*********** Adjacency graph ************\n";
   for (auto& i : chip[0]) {
-    std::cout << i.first.sequence << ":\n";
+    std::cerr << i.first.sequence << ":\n";
     Node *node = graph[i.first.sequence];
     for (auto& j : node->adjacent)
-      std::cout << "\t" << j.first->value->sequence << "(" << j.second << ")\n";
+      std::cerr << "\t" << j.first->value->sequence << "(" << j.second << ")\n";
   }
-  std::cout << "*****************************************\n";
+  std::cerr << "*****************************************\n";
 }
 
 Sequence Sequencer::last_oligo(Sequence s) {

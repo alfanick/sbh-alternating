@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
 
   Reader r(filepath);
 
-  std::cout << "Beginning from reader: " << r.beginning.sequence << "\n";
+  std::cerr << "Beginning from reader: " << r.beginning.sequence << "\n";
 
   Sequencer sequencer(r.sections, r.length, r.sample_length, r.beginning.sequence);
 
