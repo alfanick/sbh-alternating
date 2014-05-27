@@ -25,7 +25,7 @@ namespace PUT {
          * Constructor with data to feed algorithm
          */
         Sequencer(Chip &, int, int, Sequence);
-        
+
 
         /**
          * Feeds sequencer algorithm with data
@@ -46,9 +46,9 @@ namespace PUT {
         int n,                                // Result sequence length
             k,                                // Determines oligonucleotide length
             oligo_length;                     // Oligonucletide length
-        std::vector<Sequence> results,        // Possible results list
-                          verify_list;        // Verification list based on second part of chip
-        Chip chip;                            // Array of 2 spectrum objects 
+        std::vector<const Sequence* > results,        // Possible results list
+                            verify_list;        // Verification list based on second part of chip
+        Chip chip;                            // Array of 2 spectrum objects
         std::pair<Sequence, Sequence> start;  // Two first starting oligos (even and odd)
         Graph graph;                          // Map of nodes
         Sequence even_path, odd_path,         // Even and odd path
@@ -58,7 +58,7 @@ namespace PUT {
                              odd_path_nodes,  // Nodes list of odd path
                         *current_path_nodes,
                            *last_path_nodes;
-        
+
 
         /**
          * Builds graph on top of given spectrum

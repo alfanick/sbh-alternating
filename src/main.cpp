@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <unistd.h>
 #include "reader.h"
 #include "oligo.h"
 #include "sequencer.h"
@@ -19,7 +20,10 @@ int main(int argc, char **argv) {
   std::cout << "Beginning from reader: " << r.beginning.sequence << "\n";
 
   Sequencer sequencer(r.sections, r.length, r.sample_length, r.beginning.sequence);
+
   sequencer.run();
+
+  sleep(1000);
 
   return 0;
 }

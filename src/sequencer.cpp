@@ -26,7 +26,7 @@ void Sequencer::run() {
 
   verify_list.clear();
   for(auto val : chip[1])
-    verify_list.push_back(val.first.sequence);
+    verify_list.push_back(&(val.first.sequence));
 
   build_graph();
   print_graph();
@@ -104,7 +104,9 @@ std::vector<std::pair<Node *, int> > Sequencer::candidates() {
 }
 
 bool Sequencer::verify(Sequence &possible) {
-  return (std::find(verify_list.begin(), verify_list.end(), possible) != verify_list.end());
+  return (std::find_if(verify_list.begin(), verify_list.end(), [possible](const Sequence* self) {
+    return *self == possible;
+  }) != verify_list.end());
 }
 
 void Sequencer::build_graph() {
@@ -120,7 +122,9 @@ void Sequencer::build_graph() {
     for (auto& i2 : chip[0]) {
       if (i1 != i2) {
         Oligo o2 = i2.first;
-        graph[o1.sequence]->connect(graph[o2.sequence], o1.max_overlap(o2));
+        int max_overlap = o1.max_overlap(o2);
+        if (max_overlap != INT_MAX)
+          graph[o1.sequence]->connect(graph[o2.sequence], max_overlap);
       }
     }
   }
