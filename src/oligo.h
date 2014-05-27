@@ -39,12 +39,12 @@ namespace PUT {
         /**
          * Compares oligos basing on alternating chip rules
          */
-        bool operator==(const Oligo &);
+        bool operator==(const Oligo &) const;
 
         /**
          * Inverted comparation of oligos
          * */
-        bool operator!=(const Oligo &);
+        bool operator!=(const Oligo &) const;
 
         /**
          * Comparator

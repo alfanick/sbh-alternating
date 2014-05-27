@@ -28,7 +28,7 @@ Oligo& Oligo::operator=(Sequence sequence) {
   return *this;
 }
 
-bool Oligo::operator==(const Oligo & another) {
+bool Oligo::operator==(const Oligo & another) const {
   if(another.length != length)
     return false;
 
@@ -39,7 +39,7 @@ bool Oligo::operator==(const Oligo & another) {
   return true;
 }
 
-bool Oligo::operator!=(const Oligo & another) {
+bool Oligo::operator!=(const Oligo & another) const {
   return !operator==(another);
 }
 

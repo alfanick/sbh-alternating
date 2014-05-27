@@ -25,7 +25,7 @@ void Sequencer::run() {
   results.clear();
 
   verify_list.clear();
-  for(auto val : chip[1]) 
+  for(auto val : chip[1])
     verify_list.push_back(val.first.sequence);
 
   build_graph();
@@ -111,15 +111,15 @@ void Sequencer::build_graph() {
   graph.clear();
 
   // Add vertices to graph
-  for(auto iter = chip[0].begin(); iter != chip[0].end(); ++iter)
-    graph.insert(std::make_pair(iter->first.sequence, new Node(iter->first, iter->second)));
+  for (auto& iter : chip[0])
+    graph.insert(std::make_pair(iter.first.sequence, new Node(iter.first, iter.second)));
 
   // Connect vertices
-  for(auto i1 = chip[0].begin(); i1 != chip[0].end(); ++i1) {
-    Oligo o1 = i1->first;
-    for(auto i2 = chip[0].begin(); i2 != chip[0].end(); ++i2) {
-      if(i1 != i2) {
-        Oligo o2 = i2->first;
+  for (auto& i1 : chip[0]) {
+    Oligo o1 = i1.first;
+    for (auto& i2 : chip[0]) {
+      if (i1 != i2) {
+        Oligo o2 = i2.first;
         graph[o1.sequence]->connect(graph[o2.sequence], o1.max_overlap(o2));
       }
     }
@@ -128,11 +128,11 @@ void Sequencer::build_graph() {
 
 void Sequencer::print_graph() {
   std::cout << "*********** Adjacency graph ************\n";
-  for(auto i = chip[0].begin(); i != chip[0].end(); ++i) {
-    std::cout << i->first.sequence << ":\n";
-    Node *node = graph[i->first.sequence];
-    for(auto j = node->adjacent.begin(); j != node->adjacent.end(); ++j)
-      std::cout << "\t" << j->first->value.sequence << "(" << j->second << ")\n";
+  for (auto& i : chip[0]) {
+    std::cout << i.first.sequence << ":\n";
+    Node *node = graph[i.first.sequence];
+    for (auto& j : node->adjacent)
+      std::cout << "\t" << j.first->value.sequence << "(" << j.second << ")\n";
   }
   std::cout << "*****************************************\n";
 }
