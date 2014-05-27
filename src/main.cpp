@@ -23,7 +23,5 @@ int main(int argc, char **argv) {
 
   sequencer.run();
 
-  sleep(1000);
-
   return 0;
 }
