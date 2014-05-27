@@ -67,14 +67,15 @@ void Sequencer::run() {
     }
 
     if(current_path->length() == n-1) {
-      std::cout << "Sukces\n" << *current_path << "\n " << *last_path << "\n";
+      std::cerr << "Sukces\n" << *current_path << "\n " << *last_path << "\n";
+      std::cout << join() << std::endl;
       break;
     }
 
     std::swap(current_path, last_path);
     std::swap(current_path_edges, last_path_edges);
 
-    if(iter++ > 4) {
+    if(iter++ > 2 * n) {
       std::cout << "Fail\n" << *current_path << "\n " << *last_path << "\n";
       std::cout << join() << "\n";
       break;
