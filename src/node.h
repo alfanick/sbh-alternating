@@ -17,11 +17,11 @@ namespace PUT {
           }
         };
       public:
-        oligo value;
+        const oligo* value;
         int occurence;
         std::set<std::pair<Node *, int>, edgescomp> adjacent;
 
-        Node(Oligo, int);
+        Node(const Oligo*, int);
 
         void connect(Node *, int);
     };

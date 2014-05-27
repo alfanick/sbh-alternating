@@ -48,7 +48,7 @@ void Sequencer::run() {
     Sequence last_o = last_oligo(*current_path);
     if(cands_list.size() > 0) {
       std::pair<Node *, int> chosen = cands_list[0];
-      Sequence chosen_seq = chosen.first->value.sequence;
+      Sequence chosen_seq = chosen.first->value->sequence;
       *current_path += chosen_seq.substr(chosen_seq.length() - 2*(chosen.second));
       current_path_nodes->push_back(chosen.first);
       chosen.first->occurence -= 1;
@@ -93,7 +93,7 @@ std::vector<std::pair<Node *, int> > Sequencer::candidates() {
       int weight = adj.second;
       if(weight < INT_MAX) {    // Skip non-overlapping
         Sequence possible = last_path->substr(last_path->length() - oligo_length + 2);
-        Sequence next_seq = next_node->value.sequence;
+        Sequence next_seq = next_node->value->sequence;
         possible += next_seq[next_seq.size() - 1 - 2*(weight-1)];
         if(next_node->occurence > 0 && verify(possible))
           cands.push_back(adj);
@@ -114,7 +114,7 @@ void Sequencer::build_graph() {
 
   // Add vertices to graph
   for (auto& iter : chip[0])
-    graph.insert(std::make_pair(iter.first.sequence, new Node(iter.first, iter.second)));
+    graph.insert(std::make_pair(iter.first.sequence, new Node(&iter.first, iter.second)));
 
   // Connect vertices
   for (auto& i1 : chip[0]) {
@@ -136,7 +136,7 @@ void Sequencer::print_graph() {
     std::cout << i.first.sequence << ":\n";
     Node *node = graph[i.first.sequence];
     for (auto& j : node->adjacent)
-      std::cout << "\t" << j.first->value.sequence << "(" << j.second << ")\n";
+      std::cout << "\t" << j.first->value->sequence << "(" << j.second << ")\n";
   }
   std::cout << "*****************************************\n";
 }
