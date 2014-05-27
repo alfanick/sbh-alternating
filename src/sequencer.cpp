@@ -85,7 +85,7 @@ void Sequencer::run() {
 
 Sequence Sequencer::join() {
   Sequence result = "";
-  for(int i = 0; i <= odd_path.length(); ++i) {
+  for(int i = 0; i <= odd_path.length()+1; ++i) {
     result += (i % 2) ? odd_path[i-1] : even_path[i];
   }
   return result;
