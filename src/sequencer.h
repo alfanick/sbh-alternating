@@ -54,10 +54,10 @@ namespace PUT {
         Sequence even_path, odd_path,         // Even and odd path
                  *current_path,               // Currently updated path
                  *last_path;                  // Last updated path
-        std::vector<Node *> even_path_nodes,  // Nodes list of even path
-                             odd_path_nodes,  // Nodes list of odd path
-                        *current_path_nodes,
-                           *last_path_nodes;
+        std::vector<Edge>   even_path_edges,  // Edges list of even path
+                             odd_path_edges,  // Edges list of odd path
+                        *current_path_edges,
+                           *last_path_edges;
 
 
         /**
@@ -80,7 +80,7 @@ namespace PUT {
          * Generates candidate vertices list for last nucleotide in
          * current path
          */
-        std::vector<std::pair<Node *, int> > candidates();
+        std::vector<Edge> candidates();
 
 
         /**

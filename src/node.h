@@ -8,10 +8,13 @@
 
 namespace PUT {
   namespace SBH {
+    class Node;
+    typedef std::pair<Node *, int> Edge;
+    typedef std::map<std::string, Node *> Graph;
     class Node {
       private:
         struct edgescomp {
-          bool operator()(const std::pair<Node *, int> &a, const std::pair<Node *, int> b) const {
+          bool operator()(const Edge &a, const Edge &b) const {
             if(a.second != b.second) return a.second < b.second;
             return a.first < b.first;
           }
@@ -19,14 +22,12 @@ namespace PUT {
       public:
         const oligo* value;
         int occurence;
-        std::set<std::pair<Node *, int>, edgescomp> adjacent;
+        std::set<Edge, edgescomp> adjacent;
 
         Node(const Oligo*, int);
 
         void connect(Node *, int);
     };
-
-    typedef std::map<std::string, Node *> Graph;
   }
 }
 

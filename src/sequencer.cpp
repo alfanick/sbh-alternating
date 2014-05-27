@@ -36,25 +36,28 @@ void Sequencer::run() {
 
   current_path = &even_path;
   last_path = &odd_path;
-  current_path_nodes = &even_path_nodes;
-  last_path_nodes = &odd_path_nodes;
+  current_path_edges = &even_path_edges;
+  last_path_edges = &odd_path_edges;
 
   int iter = 0;
 
   while(1) {
 
-    std::vector<std::pair<Node *, int> > cands_list = candidates();
+    std::vector<Edge> cands_list = candidates();
 
     Sequence last_o = last_oligo(*current_path);
     if(cands_list.size() > 0) {
-      std::pair<Node *, int> chosen = cands_list[0];
+      Edge chosen = cands_list[0];
       Sequence chosen_seq = chosen.first->value->sequence;
       *current_path += chosen_seq.substr(chosen_seq.length() - 2*(chosen.second));
-      current_path_nodes->push_back(chosen.first);
+      current_path_edges->push_back(chosen);
       chosen.first->occurence -= 1;
     }
     else {
-      // Remove last node
+      Edge last_edge = current_path_edges->at(current_path_edges->size()-1);
+      Node * last_node = (*(current_path_edges->end()-1)).first;
+      last_node->adjacent.erase(last_node->adjacent.find(last_edge));
+      *current_path = current_path->substr(0,current_path->length() - last_edge.second*2);
     }
 
     if(current_path->length() == n-1) {
@@ -63,7 +66,7 @@ void Sequencer::run() {
     }
 
     std::swap(current_path, last_path);
-    std::swap(current_path_nodes, last_path_nodes);
+    std::swap(current_path_edges, last_path_edges);
 
     if(iter++ > 4) {
       std::cout << "Fail\n" << *current_path << "\n " << *last_path << "\n";
@@ -82,10 +85,10 @@ Sequence Sequencer::join() {
 }
 
 
-std::vector<std::pair<Node *, int> > Sequencer::candidates() {
+std::vector<Edge> Sequencer::candidates() {
   Sequence last = last_oligo(*current_path);
   Node * node = graph[last];
-  std::vector<std::pair<Node *, int> > cands;
+  std::vector<Edge> cands;
 
   if(current_path->length() <= last_path->length() && node != NULL) {
     for(auto adj : node->adjacent) {
