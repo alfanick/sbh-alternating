@@ -46,8 +46,8 @@ namespace PUT {
         int n,                                // Result sequence length
             k,                                // Determines oligonucleotide length
             oligo_length;                     // Oligonucletide length
-        std::vector<const Sequence* > results,        // Possible results list
-                            verify_list;        // Verification list based on second part of chip
+        std::vector<const Sequence* > results,// Possible results list
+                            verify_list;      // Verification list based on second part of chip
         Chip chip;                            // Array of 2 spectrum objects
         std::pair<Sequence, Sequence> start;  // Two first starting oligos (even and odd)
         Graph graph;                          // Map of nodes
@@ -98,7 +98,7 @@ namespace PUT {
         /**
          * Joins even and odd path to create result
          */
-        Sequence join();
+        Sequence * join();
     };
   }
 }

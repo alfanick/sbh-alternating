@@ -13,8 +13,9 @@ void Sequencer::feed(Chip & chip, int n, int k, Sequence start) {
   this->n = n;
   this->k = k;
   this->oligo_length = k*2-1;
-  Sequence first = start.substr(0, start.length()-1);
-  Sequence second = start.substr(1);
+  Sequence first = start.substr(0, k*2-1);
+  Sequence second = start.substr(1, k*2-1);
+  std::cout << first << " " << second;
   for(int i = 1; i < first.length(); i+=2) first[i] = Nucleotide::X;
   for(int i = 1; i < second.length(); i+=2) second[i] = Nucleotide::X;
   this->start = make_pair(first,second);
@@ -34,6 +35,9 @@ void Sequencer::run() {
 
   even_path = start.first;
   odd_path = start.second;
+
+  even_path_edges.push_back(std::make_pair(graph[start.first],0));
+  odd_path_edges.push_back(std::make_pair(graph[start.second],0));
 
   current_path = &even_path;
   last_path = &odd_path;
@@ -61,32 +65,36 @@ void Sequencer::run() {
       std::cerr << "Removing " << last_edge.first->value->sequence << " from " << *current_path << "\n";
       current_path_edges->erase(--current_path_edges->end());
       Node * last_node = (*(--current_path_edges->end())).first;
-      last_node->adjacent.erase(last_node->adjacent.find(last_edge));
+      // for (auto edge : last_node->adjacent)
+      //   std::cout << "\t" << edge.first->value->sequence << "\n";
+      if(last_node->adjacent.find(last_edge) != last_node->adjacent.end())
+        last_node->adjacent.erase(last_node->adjacent.find(last_edge));
       *current_path = current_path->substr(0,current_path->length() - last_edge.second*2);
       std::cerr << "Current path is " << *current_path << " now\n";
     }
 
-    if(current_path->length() == n-1) {
-      std::cerr << "Sukces\n" << *current_path << "\n " << *last_path << "\n";
-      std::cout << join() << std::endl;
+    if(current_path->length() == n-1 && last_path->length() == n-1) {
+      // std::cerr << "Sukces\n" << *current_path << "\n " << *last_path << "\n";
+      std::cout << "Success!\n" << *join() << std::endl;
+      results.push_back(join());
       break;
     }
 
     std::swap(current_path, last_path);
     std::swap(current_path_edges, last_path_edges);
 
-    if(iter++ > 2 * n) {
-      std::cout << "Fail\n" << *current_path << "\n " << *last_path << "\n";
-      std::cout << join() << "\n";
-      break;
-    }
+    // if(iter++ > 2 * n) {
+    //   std::cout << "Fail\n" << *current_path << "\n " << *last_path << "\n";
+    //   std::cout << *join() << "\n";
+    //   break;
+    // }
   }
 }
 
-Sequence Sequencer::join() {
-  Sequence result = "";
+Sequence* Sequencer::join() {
+  Sequence* result = new Sequence("");
   for(int i = 0; i <= odd_path.length()+1; ++i) {
-    result += (i % 2) ? odd_path[i-1] : even_path[i];
+    *result += (i % 2) ? odd_path[i-1] : even_path[i];
   }
   return result;
 }
