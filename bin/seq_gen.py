@@ -63,6 +63,8 @@ def print_alternating(name, seq, args, chip):
     print "; orignal sequence"
     print "; %s" % seq
 
+CHIPS = {"alternating-ex": (chop_sequence_alternating, print_alternating)}
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", default="data/ecoli.fa",
@@ -70,7 +72,8 @@ if __name__ == "__main__":
     parser.add_argument("-r", "--random", action="store_true", default=False,
                         help="use random sequence instead of FASTA")
     parser.add_argument("-c", "--chip", default="alternating-ex",
-                        help="chip type for SBH simulation")
+                        help="chip type for SBH simulation (%s)" %
+                        ', '.join(CHIPS.keys()))
     parser.add_argument("-s", "--start", type=int, default=10,
                         help="number of known nucleotides")
     parser.add_argument("-k", "--sample-length", type=int, default=5,
@@ -91,8 +94,8 @@ if __name__ == "__main__":
 
     seq = select_sequence(seq, args.length)
 
-    if args.chip == "alternating-ex":
-        chip = chop_sequence_alternating(seq, args.sample_length)
-        print_alternating(seq_name, seq, args, chip)
+    if args.chip in CHIPS:
+        chip = CHIPS[args.chip][0](seq, args.sample_length)
+        CHIPS[args.chip][1](seq_name, seq, args, chip)
     else:
         print "unsupported chip type"
