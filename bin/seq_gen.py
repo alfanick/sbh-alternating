@@ -29,11 +29,10 @@ def map_invert(map):
     return inv_map
 
 
-def remove_known(oligo):
-    return "".join([('X' if i % 2 else k) for i, k in enumerate(oligo)])
-
-
 def chop_sequence_alternating(seq, k):
+    def remove_known(oligo):
+        return "".join([('X' if i % 2 else k) for i, k in enumerate(oligo)])
+
     a, b = defaultdict(int), defaultdict(int)
 
     for i, n in enumerate(seq+" "):
