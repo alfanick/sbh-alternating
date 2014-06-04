@@ -4,11 +4,11 @@ using namespace PUT::SBH;
 
 Sequencer::Sequencer() {};
 
-Sequencer::Sequencer(Chip & chip, int n, int k, Sequence start) {
+Sequencer::Sequencer(Chip &chip, int n, int k, Sequence start) {
   feed(chip, n, k, start);
 }
 
-void Sequencer::feed(Chip & chip, int n, int k, Sequence start) {
+void Sequencer::feed(Chip &chip, int n, int k, Sequence start) {
   this->chip = chip;
   this->n = n;
   this->k = k;
@@ -16,8 +16,11 @@ void Sequencer::feed(Chip & chip, int n, int k, Sequence start) {
   Sequence first = start.substr(0, k*2-1);
   Sequence second = start.substr(1, k*2-1);
   std::cout << first << " " << second;
-  for(int i = 1; i < first.length(); i+=2) first[i] = Nucleotide::X;
-  for(int i = 1; i < second.length(); i+=2) second[i] = Nucleotide::X;
+
+  for (int i = 1; i < first.length(); i+=2) first[i] = Nucleotide::X;
+
+  for (int i = 1; i < second.length(); i+=2) second[i] = Nucleotide::X;
+
   this->start = make_pair(first,second);
   results.clear();
 }
@@ -27,7 +30,7 @@ void Sequencer::run() {
 
   verify_list.clear();
 
-  for(auto& val : chip[1])
+  for (auto &val : chip[1])
     verify_list.push_back(&(val.first.sequence));
 
   build_graph();
@@ -46,34 +49,36 @@ void Sequencer::run() {
 
   int iter = 0;
 
-  while(1) {
+  while (1) {
 
     std::vector<Edge> cands_list = candidates();
 
     Sequence last_o = last_oligo(*current_path);
-    if(cands_list.size() > 0) {
+
+    if (cands_list.size() > 0) {
       Edge chosen = cands_list[0];
       Sequence chosen_seq = chosen.first->value->sequence;
       *current_path += chosen_seq.substr(chosen_seq.length() - 2*(chosen.second));
       current_path_edges->push_back(chosen);
       chosen.first->occurence -= 1;
       std::cerr << "Adding " << chosen.first->value->sequence << " to " << *current_path << "\n";
-    }
-    else if(current_path_edges->size() > 0){
+    } else if (current_path_edges->size() > 0) {
       Edge last_edge = *(--current_path_edges->end());
       last_edge.first->occurence += 1;
       std::cerr << "Removing " << last_edge.first->value->sequence << " from " << *current_path << "\n";
       current_path_edges->erase(--current_path_edges->end());
-      Node * last_node = (*(--current_path_edges->end())).first;
+      Node* last_node = (*(--current_path_edges->end())).first;
+
       // for (auto edge : last_node->adjacent)
       //   std::cout << "\t" << edge.first->value->sequence << "\n";
-      if(last_node->adjacent.find(last_edge) != last_node->adjacent.end())
+      if (last_node->adjacent.find(last_edge) != last_node->adjacent.end())
         last_node->adjacent.erase(last_node->adjacent.find(last_edge));
+
       *current_path = current_path->substr(0,current_path->length() - last_edge.second*2);
       std::cerr << "Current path is " << *current_path << " now\n";
     }
 
-    if(current_path->length() == n-1 && last_path->length() == n-1) {
+    if (current_path->length() == n-1 && last_path->length() == n-1) {
       // std::cerr << "Sukces\n" << *current_path << "\n " << *last_path << "\n";
       std::cout << "Success!\n" << *join() << std::endl;
       results.push_back(join());
@@ -93,31 +98,36 @@ void Sequencer::run() {
 
 Sequence* Sequencer::join() {
   Sequence* result = new Sequence("");
-  for(int i = 0; i <= odd_path.length()+1; ++i) {
+
+  for (int i = 0; i <= odd_path.length()+1; ++i) {
     *result += (i % 2) ? odd_path[i-1] : even_path[i];
   }
+
   return result;
 }
 
 
 std::vector<Edge> Sequencer::candidates() {
   Sequence last = last_oligo(*current_path);
-  Node * node = graph[last];
+  Node* node = graph[last];
   std::vector<Edge> cands;
 
-  if(current_path->length() <= last_path->length() && node != NULL) {
-    for(auto adj : node->adjacent) {
-      Node * next_node = adj.first;
+  if (current_path->length() <= last_path->length() && node != NULL) {
+    for (auto adj : node->adjacent) {
+      Node* next_node = adj.first;
       int weight = adj.second;
-      if(weight < INT_MAX) {    // Skip non-overlapping
+
+      if (weight < INT_MAX) {   // Skip non-overlapping
         Sequence possible = last_path->substr(last_path->length() - oligo_length + 2);
         Sequence next_seq = next_node->value->sequence;
         possible += next_seq[next_seq.size() - 1 - 2*(weight-1)];
-        if(next_node->occurence > 0 && verify(possible))
+
+        if (next_node->occurence > 0 && verify(possible))
           cands.push_back(adj);
       }
     }
   }
+
   return cands;
 }
 
@@ -131,16 +141,18 @@ void Sequencer::build_graph() {
   graph.clear();
 
   // Add vertices to graph
-  for (auto& iter : chip[0])
+  for (auto &iter : chip[0])
     graph.insert(std::make_pair(iter.first.sequence, new Node(&iter.first, iter.second)));
 
   // Connect vertices
-  for (auto& i1 : chip[0]) {
+  for (auto &i1 : chip[0]) {
     Oligo o1 = i1.first;
-    for (auto& i2 : chip[0]) {
+
+    for (auto &i2 : chip[0]) {
       if (i1 != i2) {
         Oligo o2 = i2.first;
         int max_overlap = o1.max_overlap(o2);
+
         if (max_overlap != INT_MAX)
           graph[o1.sequence]->connect(graph[o2.sequence], max_overlap);
       }
@@ -150,12 +162,15 @@ void Sequencer::build_graph() {
 
 void Sequencer::print_graph() {
   std::cerr << "*********** Adjacency graph ************\n";
-  for (auto& i : chip[0]) {
+
+  for (auto &i : chip[0]) {
     std::cerr << i.first.sequence << ":\n";
-    Node *node = graph[i.first.sequence];
-    for (auto& j : node->adjacent)
+    Node* node = graph[i.first.sequence];
+
+    for (auto &j : node->adjacent)
       std::cerr << "\t" << j.first->value->sequence << "(" << j.second << ")\n";
   }
+
   std::cerr << "*****************************************\n";
 }
 
