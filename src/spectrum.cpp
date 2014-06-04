@@ -1,11 +1,11 @@
 #include "spectrum.h"
 
 namespace PUT {
-namespace SBH {
+  namespace SBH {
 
-void Spectrum::add(const std::string& oligo, int occurence) {
-  insert(std::make_pair(Oligo(oligo), occurence));
-}
+    void Spectrum::add(const std::string &oligo, int occurence) {
+      insert(std::make_pair(Oligo(oligo), occurence));
+    }
 
-}
+  }
 }

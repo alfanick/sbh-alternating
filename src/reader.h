@@ -11,20 +11,20 @@
 namespace PUT {
   namespace SBH {
     class Reader {
-      public:
-        Reader(const std::string& filename_);
+     public:
+      Reader(const std::string &filename_);
 
-        Chip sections;
-        Oligo beginning;
-        unsigned long long length;
-        int sample_length;
+      Chip sections;
+      Oligo beginning;
+      unsigned long long length;
+      int sample_length;
 
-      private:
-        enum State { NONE, ODD, EVEN, OCCURENCE, OLIGO, INFO };
+     private:
+      enum State { NONE, ODD, EVEN, OCCURENCE, OLIGO, INFO };
 
-        State parseLine(std::string& line);
+      State parseLine(std::string &line);
 
-        std::string filename;
+      std::string filename;
 
     };
   };

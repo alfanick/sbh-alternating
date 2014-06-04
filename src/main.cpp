@@ -9,10 +9,10 @@
 
 using namespace PUT::SBH;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   std::string filepath = "data/example.seq";
 
-  if(argc > 1)
+  if (argc > 1)
     filepath = argv[1];
 
   Reader r(filepath);
