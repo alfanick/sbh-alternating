@@ -63,7 +63,7 @@ def print_alternating(name, seq, args, chip):
     print "; %s" % seq
 
 
-def chop_sequence_alternating(seq, k):
+def chop_sequence_binary(seq, k):
     wsMap = {'A': 'W', 'T': 'W', 'C': 'S', 'G': 'S'}
     ryMap = {'A': 'R', 'T': 'Y', 'C': 'Y', 'G': 'R'}
 
@@ -100,7 +100,7 @@ def print_binary(name, seq, args, chip):
 
 CHIPS = {
   "alternating-ex": (chop_sequence_alternating, print_alternating),
-  "binary": (chop_sequence_alternating, print_binary)
+  "binary": (chop_sequence_binary, print_binary)
 }
 
 if __name__ == "__main__":
