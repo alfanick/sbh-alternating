@@ -62,7 +62,46 @@ def print_alternating(name, seq, args, chip):
     print "; orignal sequence"
     print "; %s" % seq
 
-CHIPS = {"alternating-ex": (chop_sequence_alternating, print_alternating)}
+
+def chop_sequence_alternating(seq, k):
+    wsMap = {'A': 'W', 'T': 'W', 'C': 'S', 'G': 'S'}
+    ryMap = {'A': 'R', 'T': 'Y', 'C': 'Y', 'G': 'R'}
+
+    def transform(oligo, tMap):
+        return "".join([(tMap[k] if i < len(oligo) - 1 else k) for i, k in enumerate(oligo)])
+
+    a, b = defaultdict(int), defaultdict(int)
+
+    for i, n in enumerate(seq+" "):
+        if i >= k and i < len(seq):
+            oligo = seq[i-k:i+1]
+            a[transform(oligo, wsMap)] += 1
+            b[transform(oligo, ryMap)] += 1
+
+    return (map_invert(trim_values(a, 1)), map_invert(trim_values(b, 1)))
+
+
+def print_binary(name, seq, args, chip):
+    print "; from %s" % name
+    print ";INFO|%s|%s" % (seq[0:args.start], args.length)
+    print ";BINARY-WS|%d" % args.sample_length
+    for n, oligos in chip[0].iteritems():
+        print ">%s" % str(n)
+        for oligo in oligos:
+            print oligo
+    print ";BINARY-RY|%d" % args.sample_length
+    for n, oligos in chip[1].iteritems():
+        print ">%s" % str(n)
+        for oligo in oligos:
+            print oligo
+
+    print "; orignal sequence"
+    print "; %s" % seq
+
+CHIPS = {
+  "alternating-ex": (chop_sequence_alternating, print_alternating),
+  "binary": (chop_sequence_alternating, print_binary)
+}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
