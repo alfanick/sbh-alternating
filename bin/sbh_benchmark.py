@@ -9,11 +9,27 @@ from time import sleep
 import os
 from time import time
 from cStringIO import StringIO
+from prettytable import PrettyTable
 
 DEVNULL = open(os.devnull, 'wb')
 
 
-def process_with_stats(name, stdin):
+def process_with_stats(name, stdin, times=1):
+    if times > 1:
+        results = []
+        for _ in xrange(0, times):
+            results.append(process_with_stats(name, stdin, 1))
+
+        result = {'execution': reduce(lambda a, c:
+                                      a+c['execution']/float(times),
+                                      results, 0),
+                  'memory': reduce(lambda a, c:
+                                   max(a, c['memory']), results, 0),
+                  'output': results[0]['output'],
+                  'status': results[0]['status']}
+
+        return result
+
     process = Popen(name, stdin=PIPE, stdout=PIPE, stderr=DEVNULL,
                     close_fds=True)
     process.stdin.write(stdin.getvalue())
@@ -63,9 +79,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    table = PrettyTable(["length", "k", "memory", "time"])
+    table.add_row([2, 2, 2, 2])
+    print table
+
     spectrum, sequence = spectrum_stream(length=800, sample_length=9)
 
-    sequenced = process_with_stats("bin/sbh", spectrum)
+    sequenced = process_with_stats("bin/sbh", spectrum, 5)
 
     if compare_sequnce(sequenced['output'], sequence):
         print "Correct sequence!"
