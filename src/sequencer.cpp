@@ -15,7 +15,6 @@ void Sequencer::feed(Chip &chip, int n, int k, Sequence start) {
   this->oligo_length = k*2-1;
   Sequence first = start.substr(0, k*2-1);
   Sequence second = start.substr(1, k*2-1);
-  std::cout << first << " " << second;
 
   for (int i = 1; i < first.length(); i+=2) first[i] = Nucleotide::X;
 
@@ -47,7 +46,7 @@ void Sequencer::run() {
   current_path_edges = &even_path_edges;
   last_path_edges = &odd_path_edges;
 
-  int iter = 0;
+  //int iter = 0;
 
   while (1) {
 
