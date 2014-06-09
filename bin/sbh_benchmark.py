@@ -132,14 +132,14 @@ if __name__ == "__main__":
 
     parser.add_argument("-l", "--min-length", type=int, default=30,
                         help="Minimum length of sequence")
-    parser.add_argument("-ml", "--max-length", type=int, default=30,
+    parser.add_argument("-ml", "--max-length", type=int, default=110,
                         help="Maximum length of sequence")
     parser.add_argument("-sl", "--step-length", type=int, default=10,
                         help="Step for length range")
 
-    parser.add_argument("-k", "--min-sample-length", type=int, default=5,
+    parser.add_argument("-k", "--min-sample-length", type=int, default=8,
                         help="Minimum number of known nucleotides")
-    parser.add_argument("-mk", "--max-sample-length", type=int, default=5,
+    parser.add_argument("-mk", "--max-sample-length", type=int, default=12,
                         help="Maximum number of known nucleotides")
     parser.add_argument("-sk", "--step-sample-length", type=int, default=1,
                         help="Step for sample length range")
@@ -205,7 +205,6 @@ if __name__ == "__main__":
 
     for n in N:
         for k in K:
-            print "%d, %d" % (n, k)
             spectrum, sequence = spectrum_stream(length=n, sample_length=k,
                                                  chip=args.chip,
                                                  input=args.input,
