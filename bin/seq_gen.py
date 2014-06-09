@@ -45,22 +45,22 @@ def chop_sequence_alternating(seq, k):
     return (map_invert(trim_values(a)), map_invert(trim_values(b)))
 
 
-def print_alternating(name, seq, args, chip):
-    print "; from %s" % name
-    print ";INFO|%s|%s" % (seq[0:args.start], args.length)
-    print ";ALTERNATING-O|%d" % args.sample_length
+def output_alternating(name, seq, args, chip):
+    yield "; from %s" % name
+    yield ";INFO|%s|%s" % (seq[0:args.start], args.length)
+    yield ";ALTERNATING-O|%d" % args.sample_length
     for n, oligos in chip[0].iteritems():
-        print ">%s" % str(n)
+        yield ">%s" % str(n)
         for oligo in oligos:
-            print oligo
-    print ";ALTERNATING-E|%d" % args.sample_length
+            yield oligo
+    yield ";ALTERNATING-E|%d" % args.sample_length
     for n, oligos in chip[1].iteritems():
-        print ">%s" % str(n)
+        yield ">%s" % str(n)
         for oligo in oligos:
-            print oligo
+            yield oligo
 
-    print "; orignal sequence"
-    print "; %s" % seq
+    yield "; orignal sequence"
+    yield "; %s" % seq
 
 
 def chop_sequence_binary(seq, k):
@@ -68,7 +68,8 @@ def chop_sequence_binary(seq, k):
     ryMap = {'A': 'R', 'T': 'Y', 'C': 'Y', 'G': 'R'}
 
     def transform(oligo, tMap):
-        return "".join([(tMap[k] if i < len(oligo) - 1 else k) for i, k in enumerate(oligo)])
+        return "".join([(tMap[k] if i < len(oligo) - 1 else k)
+                        for i, k in enumerate(oligo)])
 
     a, b = defaultdict(int), defaultdict(int)
 
@@ -81,27 +82,25 @@ def chop_sequence_binary(seq, k):
     return (map_invert(trim_values(a, 1)), map_invert(trim_values(b, 1)))
 
 
-def print_binary(name, seq, args, chip):
-    print "; from %s" % name
-    print ";INFO|%s|%s" % (seq[0:args.start], args.length)
-    print ";BINARY-WS|%d" % args.sample_length
+def output_binary(name, seq, args, chip):
+    yield "; from %s" % name
+    yield ";INFO|%s|%s" % (seq[0:args.start], args.length)
+    yield ";BINARY-WS|%d" % args.sample_length
     for n, oligos in chip[0].iteritems():
-        print ">%s" % str(n)
+        yield ">%s" % str(n)
         for oligo in oligos:
-            print oligo
-    print ";BINARY-RY|%d" % args.sample_length
+            yield oligo
+    yield ";BINARY-RY|%d" % args.sample_length
     for n, oligos in chip[1].iteritems():
-        print ">%s" % str(n)
+        yield ">%s" % str(n)
         for oligo in oligos:
-            print oligo
+            yield oligo
 
-    print "; orignal sequence"
-    print "; %s" % seq
+    yield "; orignal sequence"
+    yield "; %s" % seq
 
-CHIPS = {
-  "alternating-ex": (chop_sequence_alternating, print_alternating),
-  "binary": (chop_sequence_binary, print_binary)
-}
+CHIPS = {"alternating-ex": (chop_sequence_alternating, output_alternating),
+         "binary": (chop_sequence_binary, output_binary)}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -134,6 +133,7 @@ if __name__ == "__main__":
 
     if args.chip in CHIPS:
         chip = CHIPS[args.chip][0](seq, args.sample_length)
-        CHIPS[args.chip][1](seq_name, seq, args, chip)
+        for line in CHIPS[args.chip][1](seq_name, seq, args, chip):
+            print line
     else:
         print "unsupported chip type"
