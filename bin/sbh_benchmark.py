@@ -64,6 +64,28 @@ def compare_sequnce(a, b):
     return transform(a) == transform(b)
 
 
+def compare_sequences(o, s):
+    def best_quality(sequences, s):
+        quality = 0
+
+        for sequence in sequences:
+            same = 0
+            for i in xrange(0, min(len(s), len(sequence))):
+                if sequence[i] == s[i]:
+                    same += 1
+            quality = max(quality, same / float(len(s)))
+
+        return quality
+
+    sequences = o.split("\n")
+
+    found = not not filter(lambda x: compare_sequnce(x, s), sequences)
+    quality = best_quality(sequences, s) if not found else 1
+    outputs = len(sequences)
+
+    return (found, quality, outputs)
+
+
 def spectrum_stream(input="data/ecoli.fa", random=False,
                     chip="alternating-ex", sample_length=5,
                     length=1000, sequence=None):
@@ -111,8 +133,16 @@ if __name__ == "__main__":
     oname = "sbh-%s" % strftime('%Y%m%d%H%M%S')
     parser.add_argument("-o", "--output", default="docs/generated/%s" % oname,
                         help="Directory for output files (reports and graphs)")
+    parser.add_argument("-ot", "--output-type", default="table",
+                        help="Output type - table or csv")
 
     args = parser.parse_args()
+
+    if args.min_length > args.max_length:
+        args.max_length = args.min_length
+
+    if args.min_sample_length > args.max_sample_length:
+        args.max_sample_length = args.min_sample_length
 
     try:
         os.makedirs(args.output)
@@ -131,7 +161,7 @@ if __name__ == "__main__":
         with open(os.path.join(args.output, 'input.seq'), 'w') as file:
             file.write(prepared)
 
-    table = PrettyTable(["length", "sample", "status", "memory", "time"])
+    table = PrettyTable(["length", "sample", "status", "quality", "outputs", "memory", "time"])
     for n in xrange(args.min_length, args.max_length+1, args.step_length):
         for k in xrange(args.min_sample_length, args.max_sample_length+1,
                         args.step_sample_length):
@@ -139,9 +169,12 @@ if __name__ == "__main__":
                                                  input=args.input, sequence=prepared)
             sequenced = process_with_stats(args.sbh_binary, spectrum,
                                            args.runs)
-            status = compare_sequnce(sequenced['output'], sequence)
 
-            table.add_row([n, k, "OK" if status else "Error",
+            found, quality, results = compare_sequences(sequenced['output'], sequence)
+
+            table.add_row([n, k, "OK" if found else "Error",
+                           round(quality*100, 0),
+                           results,
                            round(sequenced['memory']/1024.0/1024.0, 2),
                            round(sequenced['execution'], 3)])
 #        print sequenced['output']
