@@ -67,14 +67,12 @@ def compare_sequnce(a, b):
 def compare_sequences(o, s):
     def best_quality(sequences, s):
         quality = 0
-
         for sequence in sequences:
             same = 0
             for i in xrange(0, min(len(s), len(sequence))):
                 if sequence[i] == s[i]:
                     same += 1
             quality = max(quality, same / float(len(s)))
-
         return quality
 
     sequences = o.split("\n")
