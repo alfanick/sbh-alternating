@@ -103,10 +103,13 @@ def output_binary(name, seq, args, chip):
 
 def generate_spectrum(input="data/ecoli.fa", random=False,
                       chip="alternating-ex", start=10, sample_length=5,
-                      length=1000, output=sys.stdout):
+                      length=1000, output=sys.stdout, sequence=None):
     seq = ""
 
-    if random:
+    if not sequence is None:
+        seq_name = "input"
+        seq = sequence[0:length]
+    elif random:
         seq_name = "random"
         seq = ''.join(choice(['A', 'T', 'G', 'C']) for _ in range(length))
     else:

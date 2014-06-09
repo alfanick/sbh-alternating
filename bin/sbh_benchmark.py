@@ -66,11 +66,11 @@ def compare_sequnce(a, b):
 
 def spectrum_stream(input="data/ecoli.fa", random=False,
                     chip="alternating-ex", sample_length=5,
-                    length=1000):
+                    length=1000, sequence=None):
     spectrum = StringIO()
 
     sequence = sbh.generate_spectrum(input, random, chip, sample_length*2,
-                                     sample_length, length, spectrum)
+                                     sample_length, length, spectrum, sequence)
 
     return (spectrum, sequence)
 
@@ -79,22 +79,19 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    table = PrettyTable(["length", "k", "memory", "time"])
-    table.add_row([2, 2, 2, 2])
+    _, prepared = spectrum_stream(length=4000, sample_length=4000)
+
+    table = PrettyTable(["length", "sample", "status", "memory", "time"])
+    for n in xrange(20, 80, 10):
+        for k in xrange(5, 8):
+            spectrum, sequence = spectrum_stream(length=n, sample_length=k,
+                                                 sequence=prepared)
+            sequenced = process_with_stats("bin/sbh", spectrum, 3)
+            status = compare_sequnce(sequenced['output'], sequence)
+
+            table.add_row([n, k, "OK" if status else "Error",
+                           round(sequenced['memory']/1024.0/1024.0, 2),
+                           round(sequenced['execution'], 3)])
+        print sequenced['output']
+
     print table
-
-    spectrum, sequence = spectrum_stream(length=800, sample_length=9)
-
-    sequenced = process_with_stats("bin/sbh", spectrum, 5)
-
-    if compare_sequnce(sequenced['output'], sequence):
-        print "Correct sequence!"
-        print sequence
-
-    else:
-        print "buuu"
-
-    print "time: %.4fs, memory: %.2fMB, status: %d" % (
-        sequenced['execution'],
-        sequenced['memory']/2.0**20,
-        sequenced['status'])
