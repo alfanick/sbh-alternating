@@ -102,7 +102,7 @@ def spectrum_stream(input="data/ecoli.fa", random=False,
     return (spectrum, sequence)
 
 
-def plot3d(N, K, Z, i, name):
+def plot3d(N, K, Z, i, name, zlabel=""):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
 
@@ -118,6 +118,9 @@ def plot3d(N, K, Z, i, name):
     #for row in table:
     #    zs.append(row[i])
     Z = np.array(zs).reshape(X.shape)
+    ax.set_xlabel('Sequence length')
+    ax.set_ylabel('Sample length')
+    ax.set_zlabel(zlabel)
     ax.plot_surface(X, Y, Z, cmap=cm.summer, rstride=1, cstride=1, linewidth=1, antialiased=True)
 
     plt.savefig(name)
@@ -236,7 +239,11 @@ if __name__ == "__main__":
         for (n, k, found, quality, results, memory, execution) in table:
             if n not in Z:
                 Z[n] = {}
-            Z[n][k] = (found, quality, results, memory, execution)
+            Z[n][k] = (found,
+                       round(quality*100, 2),
+                       results,
+                       round(memory/1024.0/1024.0, 2),
+                       round(execution,3))
             out.add_row([n, k, "OK" if found else "Error",
                         int(round(quality*100, 0)),
                         results,
@@ -249,12 +256,17 @@ if __name__ == "__main__":
             print out
 
     plot3d(N, K, Z, 0,
-           os.path.join(args.output, 'status_nk.pdf'))
+           os.path.join(args.output, 'status_nk.pdf'),
+           'Status')
     plot3d(N, K, Z, 1,
-           os.path.join(args.output, 'quality_nk.pdf'))
+           os.path.join(args.output, 'quality_nk.pdf'),
+           'Quality [%]')
     plot3d(N, K, Z, 2,
-           os.path.join(args.output, 'outputs_nk.pdf'))
+           os.path.join(args.output, 'outputs_nk.pdf'),
+           'Number of sequences')
     plot3d(N, K, Z, 3,
-           os.path.join(args.output, 'memory_nk.pdf'))
+           os.path.join(args.output, 'memory_nk.pdf'),
+           'Memory usage [MB]')
     plot3d(N, K, Z, 4,
-           os.path.join(args.output, 'time_nk.pdf'))
+           os.path.join(args.output, 'time_nk.pdf'),
+           'Time [s]')
