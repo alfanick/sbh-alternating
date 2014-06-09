@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
 from psutil import Process
-from argparse import ArgumentParser
-# import cPickle as pickle
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import seq_gen as sbh
 from subprocess import Popen, PIPE
 from time import sleep
 import os
-from time import time
+import sys
+from time import time, strftime
 from cStringIO import StringIO
 from prettytable import PrettyTable
 
@@ -75,23 +75,78 @@ def spectrum_stream(input="data/ecoli.fa", random=False,
     return (spectrum, sequence)
 
 if __name__ == "__main__":
-    parser = ArgumentParser()
+    parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument("-l", "--min-length", type=int, default=30,
+                        help="Minimum length of sequence")
+    parser.add_argument("-ml", "--max-length", type=int, default=30,
+                        help="Maximum length of sequence")
+    parser.add_argument("-sl", "--step-length", type=int, default=10,
+                        help="Step for length range")
+
+    parser.add_argument("-k", "--min-sample-length", type=int, default=5,
+                        help="Minimum number of known nucleotides")
+    parser.add_argument("-mk", "--max-sample-length", type=int, default=5,
+                        help="Maximum number of known nucleotides")
+    parser.add_argument("-sk", "--step-sample-length", type=int, default=1,
+                        help="Step for sample length range")
+
+    parser.add_argument("-rs", "--runs", type=int, default=3,
+                        help="Number of runs for each sample")
+
+    parser.add_argument("-b", "--sbh-binary",
+                        default=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'sbh'),
+                        help="Path to SBH binary")
+    parser.add_argument("-i", "--input",
+                        default=os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'ecoli.fa'),
+                        help="Input sequence in FASTA format")
+    parser.add_argument("-c", "--chip", default="alternating-ex",
+                        help="Chip type for SBH simulation")
+
+    parser.add_argument("-r", "--random", action="store_true", default=False,
+                        help="Random data instead of FASTA")
+    parser.add_argument("-nr", "--not-related", action="store_true", default=False,
+                        help="Do not use the same sequence for every test")
+
+    oname = "sbh-%s" % strftime('%Y%m%d%H%M%S')
+    parser.add_argument("-o", "--output", default="docs/generated/%s" % oname,
+                        help="Directory for output files (reports and graphs)")
 
     args = parser.parse_args()
 
-    _, prepared = spectrum_stream(length=4000, sample_length=4000)
+    try:
+        os.makedirs(args.output)
+    except:
+        pass
+
+    with open(os.path.join(args.output, 'params'), 'w') as file:
+        file.write(' '.join(sys.argv[1:]))
+
+    if args.not_related:
+        prepared = None
+    else:
+        _, prepared = spectrum_stream(length=args.max_length, input=args.input,
+                                      sample_length=args.max_length, random=args.random)
+
+        with open(os.path.join(args.output, 'input.seq'), 'w') as file:
+            file.write(prepared)
 
     table = PrettyTable(["length", "sample", "status", "memory", "time"])
-    for n in xrange(30, 200, 10):
-        for k in xrange(6, 12):
-            spectrum, sequence = spectrum_stream(length=n, sample_length=k,
-                                                 sequence=prepared)
-            sequenced = process_with_stats("bin/sbh", spectrum, 3)
+    for n in xrange(args.min_length, args.max_length+1, args.step_length):
+        for k in xrange(args.min_sample_length, args.max_sample_length+1,
+                        args.step_sample_length):
+            spectrum, sequence = spectrum_stream(length=n, sample_length=k, chip=args.chip,
+                                                 input=args.input, sequence=prepared)
+            sequenced = process_with_stats(args.sbh_binary, spectrum,
+                                           args.runs)
             status = compare_sequnce(sequenced['output'], sequence)
 
             table.add_row([n, k, "OK" if status else "Error",
                            round(sequenced['memory']/1024.0/1024.0, 2),
                            round(sequenced['execution'], 3)])
-        print sequenced['output']
+#        print sequenced['output']
+
+    with open(os.path.join(args.output, 'results.txt'), 'w') as file:
+        file.write(table.get_string())
 
     print table
