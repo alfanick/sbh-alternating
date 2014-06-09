@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import csv
 from psutil import Process
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import seq_gen as sbh
@@ -165,8 +166,8 @@ if __name__ == "__main__":
         with open(os.path.join(args.output, 'input.seq'), 'w') as file:
             file.write(prepared)
 
-    table = PrettyTable(["length", "sample", "status", "quality",
-                         "outputs", "memory", "time"])
+    table = []
+
     for n in xrange(args.min_length, args.max_length+1, args.step_length):
         for k in xrange(args.min_sample_length, args.max_sample_length+1,
                         args.step_sample_length):
@@ -180,14 +181,34 @@ if __name__ == "__main__":
             found, quality, results = compare_sequences(sequenced['output'],
                                                         sequence)
 
-            table.add_row([n, k, "OK" if found else "Error",
-                           round(quality*100, 0),
-                           results,
-                           round(sequenced['memory']/1024.0/1024.0, 2),
-                           round(sequenced['execution'], 3)])
-#        print sequenced['output']
+            table.append([n, k, found, quality, results,
+                          sequenced['memory'], sequenced['execution']])
+
+    with open(os.path.join(args.output, 'results.csv'), 'wb') as file:
+        writer = csv.writer(file)
+
+        writer.writerow(['length', 'sample', 'status', 'quality',
+                         'outputs', 'memory', 'time'])
+        for row in table:
+            writer.writerow(row)
+
+    if args.output_type == 'csv':
+        with open(os.path.join(args.output, 'results.csv'), 'r') as file:
+            if args.output_type == 'csv':
+                print file.read()
 
     with open(os.path.join(args.output, 'results.txt'), 'w') as file:
-        file.write(table.get_string())
+        out = PrettyTable(["length", "sample", "status", "quality",
+                           "outputs", "memory", "time"])
 
-    print table
+        for (n, k, found, quality, results, memory, execution) in table:
+            out.add_row([n, k, "OK" if found else "Error",
+                        int(round(quality*100, 0)),
+                        results,
+                        round(memory/1024.0/1024.0, 2),
+                        round(execution, 3)])
+
+        file.write(out.get_string())
+
+        if args.output_type == 'table':
+            print out
