@@ -48,7 +48,7 @@ def process_with_stats(name, stdin, times=1):
     execution_time = time() - stats.create_time()
     output = process.stdout.read()
 
-    if memory_usage == 0:
+    if memory_usage == 0 and process.returncode == 0:
         return process_with_stats(name, stdin)
 
     return {'execution': execution_time,
@@ -61,7 +61,8 @@ def compare_sequnce(a, b):
     def transform(s):
         return ''.join(ch for ch in s.upper() if ch.isalnum())
 
-    return transform(a) == transform(b)
+    l = min(len(a), len(b))
+    return transform(a[0:l]) == transform(b[0:l])
 
 
 def compare_sequences(o, s):
@@ -75,10 +76,10 @@ def compare_sequences(o, s):
             quality = max(quality, same / float(len(s)))
         return quality
 
-    sequences = o.split("\n")
+    sequences = map(lambda x: x.upper(), o.split("\n"))
 
-    found = not not filter(lambda x: compare_sequnce(x, s), sequences)
-    quality = best_quality(sequences, s) if not found else 1
+    quality = best_quality(sequences, s)
+    found = quality > 0.99999999
     outputs = len(sequences)
 
     return (found, quality, outputs)
@@ -115,17 +116,21 @@ if __name__ == "__main__":
                         help="Number of runs for each sample")
 
     parser.add_argument("-b", "--sbh-binary",
-                        default=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'sbh'),
+                        default=os.path.join(os.path.dirname(
+                            os.path.realpath(__file__)), 'sbh'),
                         help="Path to SBH binary")
     parser.add_argument("-i", "--input",
-                        default=os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'data', 'ecoli.fa'),
+                        default=os.path.join(os.path.dirname(
+                            os.path.realpath(__file__)), '..',
+                            'data', 'ecoli.fa'),
                         help="Input sequence in FASTA format")
     parser.add_argument("-c", "--chip", default="alternating-ex",
                         help="Chip type for SBH simulation")
 
     parser.add_argument("-r", "--random", action="store_true", default=False,
                         help="Random data instead of FASTA")
-    parser.add_argument("-nr", "--not-related", action="store_true", default=False,
+    parser.add_argument("-nr", "--not-related", action="store_true",
+                        default=False,
                         help="Do not use the same sequence for every test")
 
     oname = "sbh-%s" % strftime('%Y%m%d%H%M%S')
@@ -154,21 +159,26 @@ if __name__ == "__main__":
         prepared = None
     else:
         _, prepared = spectrum_stream(length=args.max_length, input=args.input,
-                                      sample_length=args.max_length, random=args.random)
+                                      sample_length=args.max_length,
+                                      random=args.random)
 
         with open(os.path.join(args.output, 'input.seq'), 'w') as file:
             file.write(prepared)
 
-    table = PrettyTable(["length", "sample", "status", "quality", "outputs", "memory", "time"])
+    table = PrettyTable(["length", "sample", "status", "quality",
+                         "outputs", "memory", "time"])
     for n in xrange(args.min_length, args.max_length+1, args.step_length):
         for k in xrange(args.min_sample_length, args.max_sample_length+1,
                         args.step_sample_length):
-            spectrum, sequence = spectrum_stream(length=n, sample_length=k, chip=args.chip,
-                                                 input=args.input, sequence=prepared)
+            spectrum, sequence = spectrum_stream(length=n, sample_length=k,
+                                                 chip=args.chip,
+                                                 input=args.input,
+                                                 sequence=prepared)
             sequenced = process_with_stats(args.sbh_binary, spectrum,
                                            args.runs)
 
-            found, quality, results = compare_sequences(sequenced['output'], sequence)
+            found, quality, results = compare_sequences(sequenced['output'],
+                                                        sequence)
 
             table.add_row([n, k, "OK" if found else "Error",
                            round(quality*100, 0),
