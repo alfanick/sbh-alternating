@@ -32,9 +32,13 @@ def process_with_stats(name, stdin):
     execution_time = time() - stats.create_time()
     output = process.stdout.read()
 
+    if memory_usage == 0:
+        return process_with_stats(name, stdin)
+
     return {'execution': execution_time,
             'memory': memory_usage,
-            'output': output}
+            'output': output,
+            'status': process.returncode}
 
 
 def compare_sequnce(a, b):
@@ -59,7 +63,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    spectrum, sequence = spectrum_stream(length=800, sample_length=8)
+    spectrum, sequence = spectrum_stream(length=800, sample_length=9)
 
     sequenced = process_with_stats("bin/sbh", spectrum)
 
@@ -67,7 +71,10 @@ if __name__ == "__main__":
         print "Correct sequence!"
         print sequence
 
-        print "time: %.4fs, memory: %.2fMB" % (sequenced['execution'],
-                                               sequenced['memory']/2.0**20)
     else:
         print "buuu"
+
+    print "time: %.4fs, memory: %.2fMB, status: %d" % (
+        sequenced['execution'],
+        sequenced['memory']/2.0**20,
+        sequenced['status'])
