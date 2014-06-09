@@ -10,16 +10,16 @@
 using namespace PUT::SBH;
 
 int main(int argc, char** argv) {
-  std::string filepath = "data/example.seq";
+  Reader *r;
 
   if (argc > 1)
-    filepath = argv[1];
+    r = new Reader(argv[1]);
+  else
+    r = new Reader();
 
-  Reader r(filepath);
+  std::cerr << "Beginning from reader: " << r->beginning.sequence << "\n";
 
-  std::cerr << "Beginning from reader: " << r.beginning.sequence << "\n";
-
-  Sequencer sequencer(r.sections, r.length, r.sample_length, r.beginning.sequence);
+  Sequencer sequencer(r->sections, r->length, r->sample_length, r->beginning.sequence);
 
   sequencer.run();
 

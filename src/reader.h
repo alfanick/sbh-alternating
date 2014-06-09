@@ -7,12 +7,15 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <iostream>
 
 namespace PUT {
   namespace SBH {
     class Reader {
      public:
-      Reader(const std::string &filename_);
+      void read(std::istream &input);
+      Reader(std::string filename_);
+      Reader();
 
       Chip sections;
       Oligo beginning;

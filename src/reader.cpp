@@ -6,10 +6,16 @@
 
 namespace PUT {
   namespace SBH {
+    Reader::Reader() : filename("stdin"){
+      read(std::cin);
+    }
 
-    Reader::Reader(const std::string &filename_) : filename(filename_) {
+    Reader::Reader(std::string filename_) : filename(filename_) {
       std::ifstream input(filename_);
+      read(input);
+    }
 
+    void Reader::read(std::istream &input) {
       int occurence = INT_MAX;
       int current_section = 0;
       int lpos = -1;
@@ -45,8 +51,6 @@ namespace PUT {
         }
 
       }
-
-      input.close();
     }
 
     Reader::State Reader::parseLine(std::string &line) {
