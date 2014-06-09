@@ -11,6 +11,11 @@ import sys
 from time import time, strftime
 from cStringIO import StringIO
 from prettytable import PrettyTable
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+import matplotlib.pyplot as plt
+from scipy.interpolate import griddata
+import numpy as np
 
 DEVNULL = open(os.devnull, 'wb')
 
@@ -96,6 +101,24 @@ def spectrum_stream(input="data/ecoli.fa", random=False,
 
     return (spectrum, sequence)
 
+
+def plot3d(N, K, i, table, name):
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+
+    x = list(N)
+    y = list(K)
+
+    X, Y = np.meshgrid(x, y)
+
+    zs = []
+    for row in table:
+        zs.append(row[i])
+    Z = np.array(zs).reshape(X.shape)
+    ax.plot_surface(X, Y, Z, facecolor=cm.jet(2030))
+
+    plt.savefig(name)
+
 if __name__ == "__main__":
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 
@@ -168,9 +191,12 @@ if __name__ == "__main__":
 
     table = []
 
-    for n in xrange(args.min_length, args.max_length+1, args.step_length):
-        for k in xrange(args.min_sample_length, args.max_sample_length+1,
-                        args.step_sample_length):
+    N = range(args.min_length, args.max_length+1, args.step_length)
+    K = range(args.min_sample_length, args.max_sample_length+1,
+              args.step_sample_length)
+
+    for n in N:
+        for k in K:
             spectrum, sequence = spectrum_stream(length=n, sample_length=k,
                                                  chip=args.chip,
                                                  input=args.input,
@@ -212,3 +238,10 @@ if __name__ == "__main__":
 
         if args.output_type == 'table':
             print out
+    plot3d(N, K, 3,
+           table,
+           os.path.join(args.output, 'quality_nk.pdf'))
+    plot3d(N, K, 5,
+           table,
+           os.path.join(args.output, 'memory_nk.pdf'))
+
