@@ -11,10 +11,9 @@ import sys
 from time import time, strftime
 from cStringIO import StringIO
 from prettytable import PrettyTable
-from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-from scipy.interpolate import griddata
 import numpy as np
 
 DEVNULL = open(os.devnull, 'wb')
@@ -115,13 +114,16 @@ def plot3d(N, K, Z, i, name, zlabel=""):
     for n in N:
         for k in K:
             zs.append(Z[n][k][i])
-    #for row in table:
-    #    zs.append(row[i])
     Z = np.array(zs).reshape(X.shape)
     ax.set_xlabel('Sequence length')
     ax.set_ylabel('Sample length')
     ax.set_zlabel(zlabel)
-    ax.plot_surface(X, Y, Z, cmap=cm.summer, rstride=1, cstride=1, linewidth=1, antialiased=True)
+    ax.set_xticks(np.arange(min(N), max(N)+1, (max(N)-min(N))/(len(N)-1)))
+    ax.set_yticks(np.arange(min(K), max(K)+1, (max(K)-min(K))/(len(K)-1)))
+    for item in ax.get_xticklabels() + ax.get_yticklabels() + ax.get_zticklabels():
+        item.set_fontsize(8)
+    ax.plot_surface(X, Y, Z, cmap=cm.summer, rstride=1, cstride=1,
+                    linewidth=1, antialiased=True)
 
     plt.savefig(name)
 
@@ -240,10 +242,10 @@ if __name__ == "__main__":
             if n not in Z:
                 Z[n] = {}
             Z[n][k] = (found,
-                       round(quality*100, 2),
+                       round(quality, 2),
                        results,
                        round(memory/1024.0/1024.0, 2),
-                       round(execution,3))
+                       round(execution, 3))
             out.add_row([n, k, "OK" if found else "Error",
                         int(round(quality*100, 0)),
                         results,
@@ -260,7 +262,7 @@ if __name__ == "__main__":
            'Status')
     plot3d(N, K, Z, 1,
            os.path.join(args.output, 'quality_nk.pdf'),
-           'Quality [%]')
+           'Quality')
     plot3d(N, K, Z, 2,
            os.path.join(args.output, 'outputs_nk.pdf'),
            'Number of sequences')
