@@ -8,26 +8,66 @@ from subprocess import Popen, PIPE
 from time import sleep
 import os
 from time import time
+from cStringIO import StringIO
 
 DEVNULL = open(os.devnull, 'wb')
 
-def process_stats(name):
-    process = Popen([name, "data/in5.seq"], stdout=DEVNULL, stderr=DEVNULL)
+
+def process_with_stats(name, stdin):
+    process = Popen(name, stdin=PIPE, stdout=PIPE, stderr=DEVNULL,
+                    close_fds=True)
+    process.stdin.write(stdin.getvalue())
+    process.stdin.close()
+
     stats = Process(process.pid)
 
-    memory_usage = -1
-    while process.poll() == None:
-        memory_usage = max(memory_usage, stats.memory_info().rss)
-        sleep(1/100.0)
+    memory_usage = stats.memory_info().rss
+    while process.poll() is None:
+        try:
+            memory_usage = max(memory_usage, stats.memory_info().rss)
+        except:
+            memory_usage = 0
+        sleep(1/500.0)
 
     execution_time = time() - stats.create_time()
+    output = process.stdout.read()
 
-    return {'execution_time': execution_time,
-            'memory_usage': memory_usage}
+    return {'execution': execution_time,
+            'memory': memory_usage,
+            'output': output}
+
+
+def compare_sequnce(a, b):
+    def transform(s):
+        return ''.join(ch for ch in s.upper() if ch.isalnum())
+
+    return transform(a) == transform(b)
+
+
+def spectrum_stream(input="data/ecoli.fa", random=False,
+                    chip="alternating-ex", sample_length=5,
+                    length=1000):
+    spectrum = StringIO()
+
+    sequence = sbh.generate_spectrum(input, random, chip, sample_length*2,
+                                     sample_length, length, spectrum)
+
+    return (spectrum, sequence)
 
 if __name__ == "__main__":
     parser = ArgumentParser()
 
     args = parser.parse_args()
-    process_stats("bin/sbh")
-    print sbh.generate_spectrum(output=open("/dev/null", "a"), length=20)
+
+    spectrum, sequence = spectrum_stream(length=800, sample_length=8)
+
+    sequenced = process_with_stats("bin/sbh", spectrum)
+
+    if compare_sequnce(sequenced['output'], sequence):
+        print "Correct sequence!"
+        print sequence
+
+        print "time: %.4fs, memory: %.2fMB" % (sequenced['execution'],
+                                               sequenced['memory']/2.0**20)
+    else:
+        print "buuu"

@@ -79,7 +79,7 @@ void Sequencer::run() {
 
     if (current_path->length() == n-1 && last_path->length() == n-1) {
       // std::cerr << "Sukces\n" << *current_path << "\n " << *last_path << "\n";
-      std::cout << "Success!\n" << *join() << std::endl;
+      std::cout << *join();
       results.push_back(join());
       break;
     }
