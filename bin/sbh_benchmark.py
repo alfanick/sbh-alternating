@@ -102,7 +102,7 @@ def spectrum_stream(input="data/ecoli.fa", random=False,
     return (spectrum, sequence)
 
 
-def plot3d(N, K, i, table, name):
+def plot3d(N, K, Z, i, name):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
 
@@ -112,10 +112,13 @@ def plot3d(N, K, i, table, name):
     X, Y = np.meshgrid(x, y)
 
     zs = []
-    for row in table:
-        zs.append(row[i])
+    for n in N:
+        for k in K:
+            zs.append(Z[n][k][i])
+    #for row in table:
+    #    zs.append(row[i])
     Z = np.array(zs).reshape(X.shape)
-    ax.plot_surface(X, Y, Z, facecolor=cm.jet(2030))
+    ax.plot_surface(X, Y, Z, cmap=cm.summer, rstride=1, cstride=1, linewidth=1, antialiased=True)
 
     plt.savefig(name)
 
@@ -197,6 +200,7 @@ if __name__ == "__main__":
 
     for n in N:
         for k in K:
+            print "%d, %d" % (n, k)
             spectrum, sequence = spectrum_stream(length=n, sample_length=k,
                                                  chip=args.chip,
                                                  input=args.input,
@@ -223,11 +227,16 @@ if __name__ == "__main__":
             if args.output_type == 'csv':
                 print file.read()
 
+    Z = {}
+
     with open(os.path.join(args.output, 'results.txt'), 'w') as file:
         out = PrettyTable(["length", "sample", "status", "quality",
                            "outputs", "memory", "time"])
 
         for (n, k, found, quality, results, memory, execution) in table:
+            if n not in Z:
+                Z[n] = {}
+            Z[n][k] = (found, quality, results, memory, execution)
             out.add_row([n, k, "OK" if found else "Error",
                         int(round(quality*100, 0)),
                         results,
@@ -238,10 +247,14 @@ if __name__ == "__main__":
 
         if args.output_type == 'table':
             print out
-    plot3d(N, K, 3,
-           table,
-           os.path.join(args.output, 'quality_nk.pdf'))
-    plot3d(N, K, 5,
-           table,
-           os.path.join(args.output, 'memory_nk.pdf'))
 
+    plot3d(N, K, Z, 0,
+           os.path.join(args.output, 'status_nk.pdf'))
+    plot3d(N, K, Z, 1,
+           os.path.join(args.output, 'quality_nk.pdf'))
+    plot3d(N, K, Z, 2,
+           os.path.join(args.output, 'outputs_nk.pdf'))
+    plot3d(N, K, Z, 3,
+           os.path.join(args.output, 'memory_nk.pdf'))
+    plot3d(N, K, Z, 4,
+           os.path.join(args.output, 'time_nk.pdf'))
