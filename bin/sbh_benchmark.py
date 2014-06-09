@@ -82,8 +82,8 @@ if __name__ == "__main__":
     _, prepared = spectrum_stream(length=4000, sample_length=4000)
 
     table = PrettyTable(["length", "sample", "status", "memory", "time"])
-    for n in xrange(20, 80, 10):
-        for k in xrange(5, 8):
+    for n in xrange(30, 200, 10):
+        for k in xrange(6, 12):
             spectrum, sequence = spectrum_stream(length=n, sample_length=k,
                                                  sequence=prepared)
             sequenced = process_with_stats("bin/sbh", spectrum, 3)

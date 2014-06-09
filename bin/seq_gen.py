@@ -106,7 +106,7 @@ def generate_spectrum(input="data/ecoli.fa", random=False,
                       length=1000, output=sys.stdout, sequence=None):
     seq = ""
 
-    if not sequence is None:
+    if sequence is not None:
         seq_name = "input"
         seq = sequence[0:length]
     elif random:
