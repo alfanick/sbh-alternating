@@ -47,13 +47,13 @@ def chop_sequence_alternating(seq, k):
 
 def output_alternating(name, seq, args, chip):
     yield "; from %s" % name
-    yield ";INFO|%s|%s" % (seq[0:args.start], args.length)
-    yield ";ALTERNATING-O|%d" % args.sample_length
+    yield ";INFO|%s|%s" % (seq[0:args['start']], args['length'])
+    yield ";ALTERNATING-O|%d" % args['sample_length']
     for n, oligos in chip[0].iteritems():
         yield ">%s" % str(n)
         for oligo in oligos:
             yield oligo
-    yield ";ALTERNATING-E|%d" % args.sample_length
+    yield ";ALTERNATING-E|%d" % args['sample_length']
     for n, oligos in chip[1].iteritems():
         yield ">%s" % str(n)
         for oligo in oligos:
@@ -84,13 +84,13 @@ def chop_sequence_binary(seq, k):
 
 def output_binary(name, seq, args, chip):
     yield "; from %s" % name
-    yield ";INFO|%s|%s" % (seq[0:args.start], args.length)
-    yield ";BINARY-WS|%d" % args.sample_length
+    yield ";INFO|%s|%s" % (seq[0:args['start']], args['length'])
+    yield ";BINARY-WS|%d" % args['sample_length']
     for n, oligos in chip[0].iteritems():
         yield ">%s" % str(n)
         for oligo in oligos:
             yield oligo
-    yield ";BINARY-RY|%d" % args.sample_length
+    yield ";BINARY-RY|%d" % args['sample_length']
     for n, oligos in chip[1].iteritems():
         yield ">%s" % str(n)
         for oligo in oligos:
@@ -98,6 +98,28 @@ def output_binary(name, seq, args, chip):
 
     yield "; orignal sequence"
     yield "; %s" % seq
+
+
+def generate_spectrum(input="data/ecoli.fa", random=False,
+                      chip="alternating-ex", start=10, sample_length=5,
+                      length=1000):
+    seq = ""
+
+    if random:
+        seq_name = "random"
+        seq = ''.join(choice(['A', 'T', 'G', 'C']) for _ in range(length))
+    else:
+        while len(seq) < length:
+            seq_name, seq = random_sequence(input)
+
+    seq = select_sequence(seq, length)
+
+    if chip in CHIPS:
+        chip_v = CHIPS[chip][0](seq, sample_length)
+        for line in CHIPS[chip][1](seq_name, seq, locals(), chip_v):
+            print line
+    else:
+        print "unsupported chip type"
 
 CHIPS = {"alternating-ex": (chop_sequence_alternating, output_alternating),
          "binary": (chop_sequence_binary, output_binary)}
@@ -120,20 +142,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    seq = ""
-
-    if args.random:
-        seq_name = "random"
-        seq = ''.join(choice(['A', 'T', 'G', 'C']) for _ in range(args.length))
-    else:
-        while len(seq) < args.length:
-            seq_name, seq = random_sequence(args.input)
-
-    seq = select_sequence(seq, args.length)
-
-    if args.chip in CHIPS:
-        chip = CHIPS[args.chip][0](seq, args.sample_length)
-        for line in CHIPS[args.chip][1](seq_name, seq, args, chip):
-            print line
-    else:
-        print "unsupported chip type"
+    generate_spectrum(**vars(args))
