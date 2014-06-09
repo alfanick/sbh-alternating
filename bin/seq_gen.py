@@ -121,6 +121,8 @@ def generate_spectrum(input="data/ecoli.fa", random=False,
     else:
         print "unsupported chip type"
 
+    return seq
+
 CHIPS = {"alternating-ex": (chop_sequence_alternating, output_alternating),
          "binary": (chop_sequence_binary, output_binary)}
 
