@@ -3,6 +3,7 @@
 from collections import defaultdict
 from pyfasta import Fasta
 from random import choice, randint
+import sys
 import argparse
 
 
@@ -102,7 +103,7 @@ def output_binary(name, seq, args, chip):
 
 def generate_spectrum(input="data/ecoli.fa", random=False,
                       chip="alternating-ex", start=10, sample_length=5,
-                      length=1000):
+                      length=1000, output=sys.stdout):
     seq = ""
 
     if random:
@@ -117,9 +118,9 @@ def generate_spectrum(input="data/ecoli.fa", random=False,
     if chip in CHIPS:
         chip_v = CHIPS[chip][0](seq, sample_length)
         for line in CHIPS[chip][1](seq_name, seq, locals(), chip_v):
-            print line
+            output.write(line + "\n")
     else:
-        print "unsupported chip type"
+        output.write("unsupported chip type\n")
 
     return seq
 
