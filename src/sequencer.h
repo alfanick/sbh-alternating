@@ -79,8 +79,8 @@ namespace PUT {
       /**
        * Generates candidate vertices list for last nucleotide in
        * current path
-       */
-      std::vector<Edge> candidates();
+       // */
+      std::vector<Edge> candidates(Sequence, Sequence);
 
 
       /**
@@ -98,7 +98,17 @@ namespace PUT {
       /**
        * Joins even and odd path to create result
        */
-      Sequence* join();
+      Sequence* join(Sequence, Sequence);
+
+      /**
+       * Removes last node from path
+       */
+      void remove_last();
+
+      /**
+       * Reccurent function looking for sequence
+       */
+      void search(Sequence, Sequence, bool);
     };
   }
 }
