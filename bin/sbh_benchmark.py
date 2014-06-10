@@ -127,6 +127,12 @@ def plot3d(N, K, Z, i, name, zlabel=""):
 
     plt.savefig(name)
 
+
+def progress_text(text, content="", inline=True, newline=False):
+    if inline:
+        sys.stderr.write("\r" * 16)
+    sys.stderr.write(text + ("%16s" % content) + ("\n" if newline else " "))
+
 if __name__ == "__main__":
     parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 
@@ -181,11 +187,14 @@ if __name__ == "__main__":
 
     try:
         os.makedirs(args.output)
+        progress_text("Creating output directory\n  ", args.output,
+                      newline=True)
     except:
         pass
 
     with open(os.path.join(args.output, 'params'), 'w') as file:
         file.write(' '.join(sys.argv[1:]))
+        progress_text("Saved parameters", newline=True)
 
     if args.not_related:
         prepared = None
@@ -196,6 +205,7 @@ if __name__ == "__main__":
 
         with open(os.path.join(args.output, 'input.seq'), 'w') as file:
             file.write(prepared)
+            progress_text("Saved input sequenced", newline=True)
 
     table = []
 
@@ -205,6 +215,7 @@ if __name__ == "__main__":
 
     for n in N:
         for k in K:
+            progress_text("Sequencing: ", "n=%d, k=%d" % (n, k))
             spectrum, sequence = spectrum_stream(length=n, sample_length=k,
                                                  chip=args.chip,
                                                  input=args.input,
@@ -218,6 +229,8 @@ if __name__ == "__main__":
             table.append([n, k, found, quality, results,
                           sequenced['memory'], sequenced['execution']])
 
+    progress_text("Sequencing: ", "done", newline=True)
+
     with open(os.path.join(args.output, 'results.csv'), 'wb') as file:
         writer = csv.writer(file)
 
@@ -225,6 +238,8 @@ if __name__ == "__main__":
                          'outputs', 'memory', 'time'])
         for row in table:
             writer.writerow(row)
+
+        progress_text("Saved CSV results", newline=True)
 
     if args.output_type == 'csv':
         with open(os.path.join(args.output, 'results.csv'), 'r') as file:
@@ -253,21 +268,34 @@ if __name__ == "__main__":
 
         file.write(out.get_string())
 
+        progress_text("Saved table results", newline=True)
+
         if args.output_type == 'table':
             print out
 
+    progress_text("Plotting: ", "status")
     plot3d(N, K, Z, 0,
            os.path.join(args.output, 'status_nk.pdf'),
            'Status')
+
+    progress_text("Plotting: ", "quality")
     plot3d(N, K, Z, 1,
            os.path.join(args.output, 'quality_nk.pdf'),
            'Quality')
+
+    progress_text("Plotting: ", "outputs")
     plot3d(N, K, Z, 2,
            os.path.join(args.output, 'outputs_nk.pdf'),
            'Number of sequences')
+
+    progress_text("Plotting: ", "memory")
     plot3d(N, K, Z, 3,
            os.path.join(args.output, 'memory_nk.pdf'),
            'Memory usage [MB]')
+
+    progress_text("Plotting: ", "time")
     plot3d(N, K, Z, 4,
            os.path.join(args.output, 'time_nk.pdf'),
            'Time [s]')
+
+    progress_text("Plotting: ", "done", newline=True)
