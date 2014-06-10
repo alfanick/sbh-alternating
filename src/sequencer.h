@@ -46,7 +46,8 @@ namespace PUT {
       int n,                                // Result sequence length
           k,                                // Determines oligonucleotide length
           oligo_length;                     // Oligonucletide length
-      std::vector<const Sequence* > results,// Possible results list
+      std::set<const Sequence > results;   // Possible results list
+      std::set<const Sequence *>
           verify_list;      // Verification list based on second part of chip
       Chip chip;                            // Array of 2 spectrum objects
       std::pair<Sequence, Sequence> start;  // Two first starting oligos (even and odd)
