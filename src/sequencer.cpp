@@ -28,19 +28,25 @@ void Sequencer::search(Sequence current_path, Sequence last_path, bool odd) {
 
   std::vector<Edge> cands_list = candidates(current_path, last_path);
 
-  for(auto chosen : cands_list) {
+  // std::cerr << "I will try all of: "; 
+  for(auto& chosen : cands_list) {
+    std::cerr << chosen.first->value->sequence << "(" << chosen.first->occurence << "), ";
+  }
+  std::cerr << std::endl;
+
+  for(auto& chosen : cands_list) {
     Sequence chosen_seq = chosen.first->value->sequence;
-    // std::cerr << "Adding " << chosen.first->value->sequence << " to " << *current_path << "\n";
-    current_path += chosen_seq.substr(chosen_seq.length() - 2*(chosen.second));
-    if (current_path.length() == n-1 && last_path.length() == n-1) {
-      Sequence *seq = odd ? join(last_path, current_path) : join(current_path, last_path);
-      std::cerr << *seq << std::endl;
-      results.push_back(seq);
-      // remove_last();
-      // break;
+    // std::cerr << "Adding " << chosen_seq << " to " << current_path << std::endl;
+    Sequence new_path = current_path + chosen_seq.substr(chosen_seq.length() - 2*(chosen.second));
+    if (new_path.length() == n-1 && last_path.length() == n-1) {
+      Sequence *seq = odd ? join(last_path, new_path) : join(new_path, last_path);
+      if(results.find(*seq) == results.end()) {
+        results.insert(*seq);
+        std::cout <<  *seq << std::endl;
+      }
     } else {
       chosen.first->occurence -= 1;
-      search(last_path, current_path, !odd);
+      search(last_path, new_path, !odd);
       chosen.first->occurence += 1;
     }
   }
@@ -52,7 +58,7 @@ void Sequencer::run() {
   verify_list.clear();
 
   for (auto &val : chip[1])
-    verify_list.push_back(&(val.first.sequence));
+    verify_list.insert(&(val.first.sequence));
 
   build_graph();
   print_graph();
@@ -121,7 +127,9 @@ void Sequencer::remove_last() {
 Sequence* Sequencer::join(Sequence even_path, Sequence odd_path) {
   Sequence* result = new Sequence("");
 
-  for (int i = 0; i <= odd_path.length()+1; ++i) {
+  int max_length = odd_path.length() > even_path.length() ? odd_path.length()+1 : even_path.length();
+
+  for (int i = 0; i <= max_length; ++i) {
     *result += (i % 2) ? odd_path[i-1] : even_path[i];
   }
 
