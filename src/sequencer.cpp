@@ -34,7 +34,7 @@ void Sequencer::search(Sequence current_path, Sequence last_path, bool odd) {
     current_path += chosen_seq.substr(chosen_seq.length() - 2*(chosen.second));
     if (current_path.length() == n-1 && last_path.length() == n-1) {
       Sequence *seq = odd ? join(last_path, current_path) : join(current_path, last_path);
-      std::cerr << *seq << std::endl;
+      std::cout << *seq << std::endl;
       results.push_back(seq);
       // remove_last();
       // break;
@@ -63,23 +63,23 @@ void Sequencer::run() {
 
 //   even_path = start.first;
 //   odd_path = start.second;
-// 
+//
 //   even_path_edges.push_back(std::make_pair(graph[start.first],0));
 //   odd_path_edges.push_back(std::make_pair(graph[start.second],0));
-// 
+//
 //   current_path = &even_path;
 //   last_path = &odd_path;
 //   current_path_edges = &even_path_edges;
 //   last_path_edges = &odd_path_edges;
-// 
+//
 //   //int iter = 0;
-// 
+//
 //   while (1) {
-// 
+//
 //     std::vector<Edge> cands_list = candidates();
-// 
+//
 //     Sequence last_o = last_oligo(*current_path);
-// 
+//
 //     if (cands_list.size() > 0) {
 //       Edge chosen = cands_list[0];
 //       Sequence chosen_seq = chosen.first->value->sequence;
@@ -90,14 +90,14 @@ void Sequencer::run() {
 //     } else if (current_path_edges->size() > 0) {
 //       remove_last();
 //     }
-// 
+//
 //     if (current_path->length() == n-1 && last_path->length() == n-1) {
 //       std::cout << *join() << std::endl;
 //       results.push_back(join());
 //       remove_last();
 //       // break;
 //     }
-// 
+//
 //     std::swap(current_path, last_path);
 //     std::swap(current_path_edges, last_path_edges);
 //   }

@@ -82,6 +82,7 @@ def compare_sequences(o, s):
         return quality
 
     sequences = map(lambda x: x.upper(), o.split("\n"))
+    sequences = filter(lambda x: len(x) > 0, sequences)
 
     quality = best_quality(sequences, s)
     found = quality > 0.99999999
