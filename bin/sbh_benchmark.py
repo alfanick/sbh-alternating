@@ -48,7 +48,7 @@ def process_with_stats(name, stdin, times=1):
             memory_usage = max(memory_usage, stats.memory_info().rss)
         except:
             memory_usage = 0
-        sleep(1/500.0)
+        sleep(1/1000.0)
 
     execution_time = time() - stats.create_time()
     output = process.stdout.read()
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     parser.add_argument("-sk", "--step-sample-length", type=int, default=1,
                         help="Step for sample length range")
 
-    parser.add_argument("-rs", "--runs", type=int, default=3,
+    parser.add_argument("-rs", "--runs", type=int, default=5,
                         help="Number of runs for each sample")
 
     parser.add_argument("-b", "--sbh-binary",
